@@ -1,0 +1,16 @@
+<div style="
+  width:200px; 
+  height:100px;
+  background:  #FFA500;
+  border-width: 2px;
+ 
+  border-radius: 50px;
+  border-top-left-radius: 0px;">
+Conteúdo
+</div>
+
+
+
+<body>
+    <h1 id="inicio">Teste de jogo </h1>
+</body> 

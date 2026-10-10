@@ -1,0 +1,220 @@
+@font-face {
+    font-family: 'Umpush Light';
+    src: url('./Umpush Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+/*
+The <body> tag defines the document's body.
+The <body> element contains all the contents of an HTML document, such as headings, paragraphs, images, hyperlinks, tables, lists, etc.
+Note: There can only be one <body> element in an HTML documen
+*/
+
+/* changes the entire page settings */
+body {
+    margin: 0;
+    min-height: 100vh;
+    background-image: url("https://cdn.architextures.org/textures/23/2/oak-veneermdf-none-rz7xim-1200.jpg");
+    font-family: 'Umpush Light', sans-serif;
+}
+
+/* Title in the top-left corner */
+.page-title {
+    position: absolute;
+    top: 15px;
+    left: 20px;
+
+    margin: 0;
+    font-size: 40px;
+    color: black;
+    z-index: 2;
+}
+
+
+.game-layout {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    pointer-events: none;
+}
+
+/* h1 -> titulo Alquerque */
+h1 {
+    color: #E8D5A5;
+    font-size: 45px;
+    margin: 10px;
+    text-align: center;
+    font-family: Arial;
+}
+
+h2 {
+    font-weight: bold;
+    color: #e7e7e5;
+    font-size: 40px;
+    margin: 5px;
+    text-align: center;
+    font-family: Arial;
+}
+
+/* NAO ESTA A SER USADA CURRENTLY */
+.boxe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;          /* Width of the box */
+    height: 20px;         /* Height of the box */
+    background-color: rgba(243, 241, 239, 0.863); /* Background color */
+    border: 2px solid rgb(0, 0, 0);  /* Border around the box */
+    padding: 10px;        /* Space between content and border */
+    margin: 20px;         /* Space outside the box */ 
+}
+
+/* board of the game*/
+.board {
+    width: 600px;
+    height: 600px;
+    background-color: rgb(247, 210, 154);
+    border: 20px solid rgb(43, 20, 2);
+    border-radius: 40px;
+    font-size: 25px;
+    box-sizing: border-box;
+    font-family: 'Umpush Light', sans-serif;
+
+
+    /* display: flex;
+    justify-content: center; /* Centers content horizontally 
+    align-items: flex-start; /* moves content to the top 
+    padding-top: 15px; /* Space from the top edge */
+}
+
+/* handles the grid lines of board */
+.board-grid {
+    width: 100%;
+    height: 100%;
+    display: block;
+    fill: none;
+    stroke: rgb(43, 20, 2);
+    stroke-width: 3;
+}
+
+/* handles the left sidebar with title and settings */
+.leftSidebar {
+    margin: 20px;
+    width: 260px;
+    height: 95vh;
+    border-radius: 15px;
+    background-color: #262421;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+    border: 2px solid #1B0000;
+}
+
+/* handles the chat sidebar with log of the game*/
+.chatSidebar {
+    position: fixed;
+    top: 10px;
+    right: 20px; /* Distance from the right edge */
+    width: 350px;
+    height: 50vh;
+    z-index: 2;
+    margin: 20px;
+    border-radius: 15px;
+    background-color: #262421;
+    display: flex;
+    flex-direction: column;
+
+}
+
+.chatSidebar-text{
+    margin-top: auto;
+    align-self: flex-start;
+    text-align: left;
+    box-sizing: border-box;
+    width: 100%;
+    padding-bottom: 15px;
+    margin-left: 15px;
+    color: #fefefa;
+}
+
+.sidebar-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.btn {
+    width: 90%;
+    background-color: #44423f; 
+    color: white;
+    border: none;
+    padding: 12px 18px; 
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+    padding: 14px 18px;
+    justify-content: left;
+    gap: 10px;
+    display: flex;
+    align-items: center;
+    font-family: 'Umpush Light', sans-serif;
+    font-weight: bold;
+}
+
+.btn:hover {
+    background-color: #5c5a58;
+    border: 0.1px solid #ffffff;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
+}
+
+.game-buttons {
+    pointer-events: auto; /* lets you click the board buttons, overlaps pointer events from game-layout */
+    z-index: 10;
+    display: flex;
+    flex-direction: row;  
+    align-items: center;    
+    gap: 15px;
+    font-weight: bold;
+}
+
+.gbtn {
+    width: 150px;
+    height: 40px;
+    margin-top: 65px;
+    padding: 0 5px;
+    background-color: #44423f; 
+    color: white;
+    border: none;
+    padding: 12px 18px; 
+    border-radius: 8px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.2s;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    font-family: 'Umpush Light', sans-serif;
+    font-weight: bold;
+}
+
+.gbtn:hover {
+    background-color: #5c5a58;
+    border: 0.1px solid #ffffff;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
+}
+
+
+
+
+
