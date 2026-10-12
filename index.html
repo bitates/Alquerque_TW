@@ -7,6 +7,41 @@
     <link rel="stylesheet" href="visuals.css">
 </head>
 
+<div class="popup-overlay" id="popup" onclick="closePopup(event)">
+    <div class="popup-content" role="dialog" aria-modal="true">
+        <button class="popup-close" onclick="closePopup()" aria-label="Close">✕</button>
+
+        <div id="panel-settings" class="panel">
+            <h2>Settings</h2>
+            <label><input type="checkbox" id="hintsToggle"> Show possible moves</label>
+            <label><input type="checkbox" id="soundToggle"> Sound effects</label>
+        </div>
+
+        <div id="panel-rules" class="panel">
+            <h2>Rules</h2>
+                <ul> Jogadores alteram turnos, fazendo ou movimentos ou capturas; </ul>
+                <ul> Jogador pode mover uma peça para posição adjacente se: 
+                    <li>existir uma linha a unir as posições inicial e final;</li>
+                    <li>não retroceder em direção à sua fila inicial;</li>
+                </ul>
+                <ul>Jogada captura peça do adversário saltando sobre ela;</ul>
+                <ul>Peça capturada é removida do tabuleiro;</ul>
+                <ul>Saltos para qualquer posição com linha, incluindo para trás;</ul>
+                <ul>Peças na última fila podem capturar para ou lado ou para trás;</ul>
+                <ul>Sendo possível, a captura é obrigatória;</ul>
+                <ul>Sopro ocorre no início da jogada, antes de mover ou capturar:
+                    <li>caso não tenha realizado uma captura mas foi movida;</li>
+                    <li>fez uma captura mas uma captura múltipla era possível</li>
+                    <li>Penalidade por falta de captura -> adversário pode soprar 1 peça;</li>
+                </ul>
+                <ul>Peça soprada é definitivamente retirada do tabuleiro</ul>
+                <ul>Mesmo se várias peças poderiam capturar, apenas 1 é soprada</ul>
+                
+
+        </div>
+    </div>
+</div>
+
 <body>
     <!-- <h1 class="page-title"></h1>-->
     <aside class="leftSidebar">
@@ -14,14 +49,12 @@
             <h1> Alquerque</h1>
         </div>
         <div class="sidebar-buttons">
-            <button class="btn" onClick="openPopup()"> ⚙️ Settings </button>
+            <button class="btn" onclick="openPopup('settings')"> ⚙️ Settings </button>
             <button class="btn"> 💡 Instructions </button>
             <button class="btn"> 👑 Leaderboard </button>
-            <button class="btn"> 📖 Rules </button>
+            <button class="btn" onclick="openPopup('rules')"> 📖 Rules </button>
 
-            <div class="popup" id="popup">
-                <button class="gbtn"> Draw </button>
-            </div>
+
         </div>
     </aside>
 

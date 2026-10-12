@@ -211,3 +211,39 @@ h2 {
     stroke: #381a03;
     stroke-width: 2.5;
 }
+
+
+.popup-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: left;
+    z-index: 1000;
+}
+.popup-overlay.open { display: flex; }
+
+.popup-content {
+    position: relative;
+    background: #262421;
+    color: #fefefa;
+    padding: 24px 32px;
+    border-radius: 15px;
+    border: 2px solid #1B0000;
+    min-width: 320px;
+    max-width: 90vw;
+}
+.panel { display: none; flex-direction: column; gap: 12px; }
+.popup-content h2 { font-size: 30px; }
+
+.popup-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    border: none;
+    background: none;
+    color: #fefefa;
+    font-size: 18px;
+    cursor: pointer;
+}
