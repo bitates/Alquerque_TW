@@ -36,13 +36,14 @@ body {
 
 .game-layout {
     position: absolute;
-    inset: 0;
-
+    top: 0;
+    left: 190px;
+    right: 270px;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
     pointer-events: none;
 }
 
@@ -64,29 +65,19 @@ h2 {
     font-family: Arial;
 }
 
-/* NAO ESTA A SER USADA CURRENTLY */
-.boxe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100px;          /* Width of the box */
-    height: 20px;         /* Height of the box */
-    background-color: rgba(243, 241, 239, 0.863); /* Background color */
-    border: 2px solid rgb(0, 0, 0);  /* Border around the box */
-    padding: 10px;        /* Space between content and border */
-    margin: 20px;         /* Space outside the box */ 
-}
 
 /* board of the game*/
 .board {
-    width: 600px;
-    height: 600px;
+    width: min(450px, 80vw);
+    aspect-ratio: 1 / 1;
+    height: 400px;
     background-color: rgb(247, 210, 154);
-    border: 20px solid rgb(43, 20, 2);
-    border-radius: 40px;
+    border: 3px solid rgb(43, 20, 2);
+    border-radius: 0;
     font-size: 25px;
     box-sizing: border-box;
     font-family: 'Umpush Light', sans-serif;
+    flex-shrink: 0;
 
 
     /* display: flex;
@@ -103,9 +94,9 @@ h2 {
     fill: none;
     stroke: rgb(43, 20, 2);
     stroke-width: 3;
+    overflow: visible;
 }
 
-/* handles the left sidebar with title and settings */
 .leftSidebar {
     margin: 20px;
     width: 260px;
@@ -184,21 +175,22 @@ h2 {
     display: flex;
     flex-direction: row;  
     align-items: center;    
-    gap: 15px;
+    gap: 12px;
     font-weight: bold;
+    margin-top: 18px;
 }
 
 .gbtn {
-    width: 150px;
-    height: 40px;
-    margin-top: 65px;
-    padding: 0 5px;
+    width: 115px;
+    height: 36px;
+    margin-top: 0;
+    padding: 5px;
     background-color: #44423f; 
     color: white;
     border: none;
     padding: 12px 18px; 
-    border-radius: 8px;
-    font-size: 20px;
+    border-radius: 6px;
+    font-size: 16px;
     cursor: pointer;
     transition: 0.2s;
     justify-content: center;
@@ -214,7 +206,8 @@ h2 {
     box-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
 }
 
-
-
-
-
+.pieces circle{
+    r: 25px;
+    stroke: #381a03;
+    stroke-width: 2.5;
+}

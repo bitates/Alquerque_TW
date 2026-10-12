@@ -14,3 +14,17 @@ Conteúdo
 <body>
     <h1 id="inicio">Teste de jogo </h1>
 </body> 
+
+
+/* NAO ESTA A SER USADA CURRENTLY */
+.boxe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;          /* Width of the box */
+    height: 20px;         /* Height of the box */
+    background-color: rgba(243, 241, 239, 0.863); /* Background color */
+    border: 2px solid rgb(0, 0, 0);  /* Border around the box */
+    padding: 10px;        /* Space between content and border */
+    margin: 20px;         /* Space outside the box */ 
+}

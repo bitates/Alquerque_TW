@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Alquerque</title>
+    <script src="index.js" defer></script>
     <link rel="stylesheet" href="visuals.css">
 </head>
 
@@ -13,10 +14,14 @@
             <h1> Alquerque</h1>
         </div>
         <div class="sidebar-buttons">
-            <button class="btn"> ⚙️ Definições </button>
-            <button class="btn"> 💡 Instruções </button>
-            <button class="btn"> 👑 Classificações </button>
-            <button class="btn"> 📖 Regras </button>
+            <button class="btn" onClick="openPopup()"> ⚙️ Settings </button>
+            <button class="btn"> 💡 Instructions </button>
+            <button class="btn"> 👑 Leaderboard </button>
+            <button class="btn"> 📖 Rules </button>
+
+            <div class="popup" id="popup">
+                <button class="gbtn"> Draw </button>
+            </div>
         </div>
     </aside>
 
@@ -29,55 +34,102 @@
         </div>
         <div class="chatSidebar-text" id="gameText">
             > jogador 1 mexeu peça para d2
+            <script>
+                test();
+            </script>
         </div>
     </aside>
     
-    <main class="game-layout">
+<main class="game-layout">
         <div class="board">
+            
             <svg viewBox="0 0 400 400"
                 xmlns="http://www.w3.org/2000/svg"
                 class="board-grid">
 
-                <!-- Vertical and horizontal grid lines -->
+                <!-- Linhas verticais e horizontais-->
                 <path d="
-                    M100 0 V400
-                    M200 0 V400
-                    M300 0 V400
-                    M0 100 H400
-                    M0 200 H400
-                    M0 300 H400
-                " />
+                    M25 25 V375
+                    M112.5 25 V375
+                    M200 25 V375
+                    M287.5 25 V375
+                    M375 25 V375
 
-                <!-- Diagonal lines -->
+                    M25 25 H375
+                    M25 112.5 H375
+                    M25 200 H375
+                    M25 287.5 H375
+                    M25 375 H375
+                "/>
+
+                <!-- Diagonais -->
                 <path d="
-                    M0 0 L100 100
-                    M200 0 L100 100
-                    M200 0 L300 100
-                    M400 0 L300 100
+                    M25 25 L112.5 112.5
+                    M200 25 L112.5 112.5
+                    M200 25 L287.5 112.5
+                    M375 25 L287.5 112.5
 
-                    M0 200 L100 100
-                    M200 200 L100 100
-                    M200 200 L300 100
-                    M400 200 L300 100
+                    M25 200 L112.5 112.5
+                    M200 200 L112.5 112.5
+                    M200 200 L287.5 112.5
+                    M375 200 L287.5 112.5
 
-                    M0 200 L100 300
-                    M200 200 L100 300
-                    M200 200 L300 300
-                    M400 200 L300 300
+                    M25 200 L112.5 287.5
+                    M200 200 L112.5 287.5
+                    M200 200 L287.5 287.5
+                    M375 200 L287.5 287.5
 
-                    M0 400 L100 300
-                    M200 400 L100 300
-                    M200 400 L300 300
-                    M400 400 L300 300
-                " />
+                    M25 375 L112.5 287.5
+                    M200 375 L112.5 287.5
+                    M200 375 L287.5 287.5
+                    M375 375 L287.5 287.5
+                "/>
+
+                <!-- Peças -->
+                <g class="pieces">
+                    <!-- Linha 0 -->
+                    <circle cx="25" cy="25" fill="#2c3e50"/>
+                    <circle cx="112.5" cy="25" fill="#2c3e50"/>
+                    <circle cx="200" cy="25" fill="#2c3e50"/>
+                    <circle cx="287.5" cy="25" fill="#2c3e50"/>
+                    <circle cx="375" cy="25" fill="#2c3e50"/>
+
+                    <!-- Linha 1 -->
+                    <circle cx="25" cy="112.5" fill="#2c3e50"/>
+                    <circle cx="112.5" cy="112.5" fill="#2c3e50"/>
+                    <circle cx="200" cy="112.5" fill="#2c3e50"/>
+                    <circle cx="287.5" cy="112.5" fill="#2c3e50"/>
+                    <circle cx="375" cy="112.5" fill="#2c3e50"/>
+
+                    <!-- Linha 2 -->
+                    <circle cx="25" cy="200" fill="#2c3e50"/>
+                    <circle cx="112.5" cy="200" fill="#2c3e50"/>
+                    <circle cx="287.5" cy="200" fill="#e74c3c"/>
+                    <circle cx="375" cy="200" fill="#e74c3c"/>
+
+                    <!-- Linha 3 -->
+                    <circle cx="25" cy="287.5" fill="#e74c3c"/>
+                    <circle cx="112.5" cy="287.5" fill="#e74c3c"/>
+                    <circle cx="200" cy="287.5" fill="#e74c3c"/>
+                    <circle cx="287.5" cy="287.5" fill="#e74c3c"/>
+                    <circle cx="375" cy="287.5" fill="#e74c3c"/>
+
+                    <!-- Linha 4 -->
+                    <circle cx="25" cy="375" fill="#e74c3c"/>
+                    <circle cx="112.5" cy="375" fill="#e74c3c"/>
+                    <circle cx="200" cy="375" fill="#e74c3c"/>
+                    <circle cx="287.5" cy="375" fill="#e74c3c"/>
+                    <circle cx="375" cy="375" fill="#e74c3c"/>
+                </g>
             </svg>
+
         </div>
         <div class="game-buttons">
-            <button class="gbtn"> EMPATE </button>
-            <button class="gbtn"> DESISTIR </button>
-            <button class="gbtn"> COMEÇAR </button>
+            <button class="gbtn"> Draw </button>
+            <button class="gbtn"> Withdraw  </button>
+            <button class="gbtn"> Start </button>
         </div>
     </main>
-</body>
 
-</html> 
+</body>
+</html>
