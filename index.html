@@ -59,17 +59,33 @@
     </aside>
 
     <aside class="chatSidebar">
+        <div class="player-status-panel">
+            <div class="player-card active" id="player1-card">
+                <span class="player-dot dark"></span>
+                <div class="player-info">
+                    <span class="player-name">Player 1</span>
+                    <span class="player-pieces">Pieces: <strong id="p1-count">12</strong></span>
+                </div>
+            </div>
+
+            <div class="match-info">
+                <span id="turn-indicator">Turn: Player 1</span>
+            </div>
+
+            <div class="player-card" id="player2-card">
+                <span class="player-dot red"></span>
+                <div class="player-info">
+                    <span class="player-name">Player 2</span>
+                    <span class="player-pieces">Pieces: <strong id="p2-count">12</strong></span>
+                </div>
+            </div>
+        </div>
+
         <div class="chatSidebar-header">
             <h2>Log</h2>
         </div>
-        <div class="sidebar-buttons">
-            <!-- Your buttons go here -->
-        </div>
         <div class="chatSidebar-text" id="gameText">
             > jogador 1 mexeu peça para d2
-            <script>
-                test();
-            </script>
         </div>
     </aside>
     
@@ -86,7 +102,7 @@
                     M112.5 25 V375
                     M200 25 V375
                     M287.5 25 V375
-                    M375 25 V375
+                    M375 25 V375    
 
                     M25 25 H375
                     M25 112.5 H375

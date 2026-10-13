@@ -68,24 +68,17 @@ h2 {
 
 /* board of the game*/
 .board {
-    width: min(450px, 80vw);
+    width: min(500px, 80vw);
     aspect-ratio: 1 / 1;
-    height: 400px;
+    height: auto;
+    padding: 18px;
     background-color: rgb(247, 210, 154);
-    border: 3px solid rgb(43, 20, 2);
-    border-radius: 0;
-    font-size: 25px;
+    border: 10px solid rgb(43, 20, 2);
     box-sizing: border-box;
-    font-family: 'Umpush Light', sans-serif;
     flex-shrink: 0;
+    border-radius: 25px;
 
-
-    /* display: flex;
-    justify-content: center; /* Centers content horizontally 
-    align-items: flex-start; /* moves content to the top 
-    padding-top: 15px; /* Space from the top edge */
 }
-
 /* handles the grid lines of board */
 .board-grid {
     width: 100%;
@@ -94,7 +87,6 @@ h2 {
     fill: none;
     stroke: rgb(43, 20, 2);
     stroke-width: 3;
-    overflow: visible;
 }
 
 .leftSidebar {
@@ -114,26 +106,96 @@ h2 {
     position: fixed;
     top: 10px;
     right: 20px; /* Distance from the right edge */
-    width: 350px;
-    height: 50vh;
+    width: 320px;
+    height: 85vh;
     z-index: 2;
     margin: 20px;
     border-radius: 15px;
     background-color: #262421;
     display: flex;
     flex-direction: column;
-
+    padding: 15px;
+    box-sizing: border-box;
+    border: 2px solid #1B0000;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
 }
 
-.chatSidebar-text{
-    margin-top: auto;
-    align-self: flex-start;
-    text-align: left;
-    box-sizing: border-box;
-    width: 100%;
+.player-status-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     padding-bottom: 15px;
-    margin-left: 15px;
+    border-bottom: 1px solid #44423f;
+}
+
+.player-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: #363431;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: 0.2s;
+}
+
+.player-card.active {
+    border-color: #e7e7e5;
+    background-color: #44423f;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.15);
+}
+
+.player-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #1b1917;
+}
+
+.player-dot.dark {
+    background-color: #2c3e50;
+}
+
+.player-dot.red {
+    background-color: #e74c3c;
+}
+
+.player-info {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
     color: #fefefa;
+    font-size: 15px;
+}
+
+.match-info {
+    text-align: center;
+    color: #E8D5A5;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 2px 0;
+}
+
+.chatSidebar-header {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.chatSidebar-header h2 {
+    font-size: 22px;
+    color: #E8D5A5;
+}
+
+.chatSidebar-text {
+    flex-grow: 1; 
+    background-color: #1b1917;
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 8px;
+    overflow-y: auto;
+    font-size: 14px;
+    color: #fefefa;
+    border: 1px solid #363431;
 }
 
 .sidebar-buttons {
@@ -207,7 +269,7 @@ h2 {
 }
 
 .pieces circle{
-    r: 25px;
+    r: 18px;
     stroke: #381a03;
     stroke-width: 2.5;
 }
