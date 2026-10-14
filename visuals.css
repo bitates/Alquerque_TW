@@ -47,13 +47,14 @@ body {
     pointer-events: none;
 }
 
-/* h1 -> titulo Alquerque */
+
 h1 {
     color: #E8D5A5;
-    font-size: 45px;
-    margin: 10px;
+    margin: 10px 0 20px 0;
+    font-size: 50px;
     text-align: center;
-    font-family: Arial;
+    font-family: 'Umpush Light';
+    font-weight: bold;
 }
 
 h2 {
@@ -62,13 +63,13 @@ h2 {
     font-size: 40px;
     margin: 5px;
     text-align: center;
-    font-family: Arial;
+    font-family: 'Umpush Light';
 }
 
 
 /* board of the game*/
 .board {
-    width: min(500px, 80vw);
+    width: 750px;
     aspect-ratio: 1 / 1;
     height: auto;
     padding: 18px;
@@ -77,8 +78,9 @@ h2 {
     box-sizing: border-box;
     flex-shrink: 0;
     border-radius: 25px;
-
+    pointer-events: auto; /* Garante que o tabuleiro recebe cliques */
 }
+
 /* handles the grid lines of board */
 .board-grid {
     width: 100%;
@@ -90,9 +92,10 @@ h2 {
 }
 
 .leftSidebar {
-    margin: 20px;
-    width: 260px;
-    height: 95vh;
+    margin: 50px;
+    width: 350px;
+    height: auto;
+    padding: 15px 12px;
     border-radius: 15px;
     background-color: #262421;
     display: flex;
@@ -106,7 +109,7 @@ h2 {
     position: fixed;
     top: 10px;
     right: 20px; /* Distance from the right edge */
-    width: 320px;
+    width: 400px;
     height: 85vh;
     z-index: 2;
     margin: 20px;
@@ -269,8 +272,7 @@ h2 {
 }
 
 .pieces circle{
-    r: 18px;
-    stroke: #381a03;
+    r: 20px; /* radious */
     stroke-width: 2.5;
 }
 
@@ -281,8 +283,8 @@ h2 {
     inset: 0;
     background: rgba(0, 0, 0, 0.6);
     justify-content: center;
-    align-items: left;
-    z-index: 1000;
+    align-items: center;
+    z-index: 100;
 }
 .popup-overlay.open { display: flex; }
 
@@ -295,9 +297,32 @@ h2 {
     border: 2px solid #1B0000;
     min-width: 320px;
     max-width: 90vw;
+    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
 }
-.panel { display: none; flex-direction: column; gap: 12px; }
-.popup-content h2 { font-size: 30px; }
+
+.panel {
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px; 
+    }
+    
+.popup-content h2 { font-size: 60px; }
+
+.panel .rules-list {
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 20px;
+    font-size: 18px;     
+    line-height: 1.6;   
+}
+
+.panel li{
+    margin-bottom: 10px ;
+}
+
 
 .popup-close {
     position: absolute;
@@ -308,4 +333,89 @@ h2 {
     color: #fefefa;
     font-size: 18px;
     cursor: pointer;
+}
+
+.player-timer {
+    background-color: #1b1917;
+    color: #fefefa;
+    font-family: monospace;
+    font-size: 15px;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid #44423f;
+    letter-spacing: 1px;
+}
+
+.player-card.active .player-timer {
+    border-color: #E8D5A5;
+    color: #E8D5A5;
+    background-color: #262421;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.level {
+    pointer-events: auto; 
+    z-index: 10;
+    display: flex;
+    flex-direction: row;   
+    align-items: center;    
+    gap: 12px;
+    font-weight: bold;
+    margin-top: 18px;
+    color: #e74c3c;
+}
+
+.level {
+    pointer-events: auto; 
+    z-index: 10;
+    display: flex;
+    flex-direction: row;   
+    align-items: center;    
+    gap: 12px;
+    font-weight: bold;
+    margin-top: 18px;
+}
+
+/* Estilos gerais partilhados por todos os botões */
+.level button {
+    color: #fefefa;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+
+/* Easy */
+.btn-easy {
+    background-color: #27ae60;
+}
+.btn-easy:hover {
+    background-color: #219653;
+    transform: translateY(-2px);
+}
+
+/* Medium  */
+.btn-medium {
+    background-color: #f39c12;
+}
+.btn-medium:hover {
+    background-color: #d68910;
+    transform: translateY(-2px);
+}
+
+/* Hard  */
+.btn-hard {
+    background-color: #e74c3c;
+}
+.btn-hard:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
 }

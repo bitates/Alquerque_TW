@@ -1,3 +1,7 @@
+clicar no botao à direita do shared servers
+ctrl+alt+p
+live server: open with live server
+
 <div style="
   width:200px; 
   height:100px;

@@ -11,33 +11,93 @@
     <div class="popup-content" role="dialog" aria-modal="true">
         <button class="popup-close" onclick="closePopup()" aria-label="Close">✕</button>
 
+        <div id="panel-credits" class="panel">
+            <h2>Credits</h2>
+
+            <ul class="credits-list">
+
+                <li>Trabalho realizado na Unidade Curricular Tecnologias Web, com o objetivo <br>
+                    de desenvolver o jogo Alquerque utilizando JavaScript, CSS e html:
+                </li>
+                
+                <li><strong>Developers:</strong> 
+                    <ul>
+                        <li>Simão Ribeiro - 202406281</li>
+                        <li>Martim Henriques Oliveira - 202407302</li>
+                        <li>Guilherme Gonçalves  - 202407276</li>
+                    </ul>
+                </li>
+            </ul>
+
+
+        </div>
+
         <div id="panel-settings" class="panel">
             <h2>Settings</h2>
             <label><input type="checkbox" id="hintsToggle"> Show possible moves</label>
             <label><input type="checkbox" id="soundToggle"> Sound effects</label>
+            <div class="level">
+                <button class="btn-easy">Easy</button> 
+                <button class="btn-medium">Medium</button> 
+                <button class="btn-hard">Hard</button> 
+            </div>
         </div>
 
         <div id="panel-rules" class="panel">
             <h2>Rules</h2>
-                <ul> Jogadores alteram turnos, fazendo ou movimentos ou capturas; </ul>
-                <ul> Jogador pode mover uma peça para posição adjacente se: 
-                    <li>existir uma linha a unir as posições inicial e final;</li>
-                    <li>não retroceder em direção à sua fila inicial;</li>
-                </ul>
-                <ul>Jogada captura peça do adversário saltando sobre ela;</ul>
-                <ul>Peça capturada é removida do tabuleiro;</ul>
-                <ul>Saltos para qualquer posição com linha, incluindo para trás;</ul>
-                <ul>Peças na última fila podem capturar para ou lado ou para trás;</ul>
-                <ul>Sendo possível, a captura é obrigatória;</ul>
-                <ul>Sopro ocorre no início da jogada, antes de mover ou capturar:
-                    <li>caso não tenha realizado uma captura mas foi movida;</li>
-                    <li>fez uma captura mas uma captura múltipla era possível</li>
-                    <li>Penalidade por falta de captura -> adversário pode soprar 1 peça;</li>
-                </ul>
-                <ul>Peça soprada é definitivamente retirada do tabuleiro</ul>
-                <ul>Mesmo se várias peças poderiam capturar, apenas 1 é soprada</ul>
+            
+            <ul class="rules-list">
+                <li><strong>Turns:</strong> Players alternate turns, making either a move or a capture.</li>
                 
+                <li><strong>Movement:</strong> A player can move a piece to an adjacent position if:
+                    <ul>
+                        <li>There is a line connecting the starting and ending positions;</li>
+                        <li>The move does not step backward toward their own starting row.</li>
+                    </ul>
+                </li>
+                
+                <li><strong>Single and Multiple Captures:</strong> 
+                    <ul>
+                        <li>An opponent's piece is captured by jumping over it into an empty position connected by a line (jumping backward is allowed);</li>
+                        <li>Pieces in the back row can capture sideways or backward;</li>
+                        <li>The captured piece is removed from the board;</li>
+                        <li><strong>Whenever possible, capture is mandatory.</strong></li>
+                        <li><strong>Multiple captures</strong> can be made in a single turn:
+                            <ul>
+                                <li>Jump directions can change with each capture;</li>
+                                <li>The piece <em>cannot</em> visit the same position twice;</li>
+                                <li>The piece <em>cannot</em> capture the same opponent's piece twice;</li>
+                                <li>Once a capture sequence begins, it is mandatory to continue capturing as long as possible.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Path Choice:</strong> If multiple alternative capture paths exist, any path may be chosen (it does not have to be the one that captures the most pieces).</li>
+                    </ul>
+                </li>
 
+                <li><strong>Huff (Penalty):</strong> Occurs at the beginning of the turn, before moving or capturing, if:
+                    <ul>
+                        <li>The player failed to make a mandatory capture and moved a piece instead;</li>
+                        <li>The player made a capture, but a multiple capture was possible.</li>
+                    </ul>
+                    <ul>
+                        <li><strong>Penalty:</strong> The opponent can "huff" (permanently remove) 1 piece belonging to the offender;</li>
+                        <li>Even if multiple pieces could have captured, only 1 piece is huffed.</li>
+                    </ul>
+                </li>
+                <li><strong>End of the Game:</strong> The game ends and the player loses if:
+                    <ul>
+                        <li>They have no pieces left to play;</li>
+                        <li>They have no valid moves left (neither movements nor captures).</li>
+                    </ul>
+                </li>
+
+                <li><strong>Draw:</strong> The game can end in a draw by mutual agreement, for example, when:
+                    <ul>
+                        <li>Captures can no longer occur (pieces cannot move backward and a blocking row exists);</li>
+                        <li>No captures have occurred for many turns.</li>
+                    </ul>
+                </li>
+            </ul>
         </div>
     </div>
 </div>
@@ -46,15 +106,14 @@
     <!-- <h1 class="page-title"></h1>-->
     <aside class="leftSidebar">
         <div class="sidebar-header">
-            <h1> Alquerque</h1>
+            <h1>Alquerque</h1>
         </div>
         <div class="sidebar-buttons">
-            <button class="btn" onclick="openPopup('settings')"> ⚙️ Settings </button>
-            <button class="btn"> 💡 Instructions </button>
+            <button class="btn" onclick="openPopup('settings')"> ⚙️ Game Settings </button>
+            <button class="btn" onclick="openPopup('rules')"> 📖 Instructions / Rules </button>
             <button class="btn"> 👑 Leaderboard </button>
-            <button class="btn" onclick="openPopup('rules')"> 📖 Rules </button>
-
-
+            <button class="btn" onclick="openPopup('themes')"> 🖌️ Themes </button>
+            <button class="btn" onclick="openPopup('credits')"> 🌟 Credits </button>
         </div>
     </aside>
 
@@ -65,6 +124,7 @@
                 <div class="player-info">
                     <span class="player-name">Player 1</span>
                     <span class="player-pieces">Pieces: <strong id="p1-count">12</strong></span>
+                    <span class="player-timer" id="timer-p1">10:00</span>
                 </div>
             </div>
 
@@ -77,15 +137,16 @@
                 <div class="player-info">
                     <span class="player-name">Player 2</span>
                     <span class="player-pieces">Pieces: <strong id="p2-count">12</strong></span>
+                    <span class="player-timer" id="timer-p2">10:00</span>
                 </div>
             </div>
         </div>
+
 
         <div class="chatSidebar-header">
             <h2>Log</h2>
         </div>
         <div class="chatSidebar-text" id="gameText">
-            > jogador 1 mexeu peça para d2
         </div>
     </aside>
     
@@ -137,46 +198,47 @@
                 <!-- Peças -->
                 <g class="pieces">
                     <!-- Linha 0 -->
-                    <circle cx="25" cy="25" fill="#2c3e50"/>
-                    <circle cx="112.5" cy="25" fill="#2c3e50"/>
-                    <circle cx="200" cy="25" fill="#2c3e50"/>
-                    <circle cx="287.5" cy="25" fill="#2c3e50"/>
-                    <circle cx="375" cy="25" fill="#2c3e50"/>
+                    <circle cx="25" cy="25" data-row="0" data-col="0"/>
+                    <circle cx="112.5" cy="25"  data-row="0" data-col="1"/>
+                    <circle cx="200" cy="25" data-row="0" data-col="2"/>
+                    <circle cx="287.5" cy="25" data-row="0" data-col="3"/>
+                    <circle cx="375" cy="25" data-row="0" data-col="4"/>
 
                     <!-- Linha 1 -->
-                    <circle cx="25" cy="112.5" fill="#2c3e50"/>
-                    <circle cx="112.5" cy="112.5" fill="#2c3e50"/>
-                    <circle cx="200" cy="112.5" fill="#2c3e50"/>
-                    <circle cx="287.5" cy="112.5" fill="#2c3e50"/>
-                    <circle cx="375" cy="112.5" fill="#2c3e50"/>
+                    <circle cx="25" cy="112.5" data-row="1" data-col="0"/>
+                    <circle cx="112.5" cy="112.5" data-row="1" data-col="1"/>
+                    <circle cx="200" cy="112.5" data-row="1" data-col="2"/>
+                    <circle cx="287.5" cy="112.5" data-row="1" data-col="3"/>
+                    <circle cx="375" cy="112.5" data-row="1" data-col="4"/>
 
                     <!-- Linha 2 -->
-                    <circle cx="25" cy="200" fill="#2c3e50"/>
-                    <circle cx="112.5" cy="200" fill="#2c3e50"/>
-                    <circle cx="287.5" cy="200" fill="#e74c3c"/>
-                    <circle cx="375" cy="200" fill="#e74c3c"/>
+                    <circle cx="25" cy="200" data-row="2" data-col="0"/>
+                    <circle cx="112.5" cy="200" data-row="2" data-col="1"/>
+                    <circle cx="200" cy="200" data-row="2" data-col="2"/> <!-- O centro vazio! -->
+                    <circle cx="287.5" cy="200" data-row="2" data-col="3"/>
+                    <circle cx="375" cy="200" data-row="2" data-col="4"/>
 
                     <!-- Linha 3 -->
-                    <circle cx="25" cy="287.5" fill="#e74c3c"/>
-                    <circle cx="112.5" cy="287.5" fill="#e74c3c"/>
-                    <circle cx="200" cy="287.5" fill="#e74c3c"/>
-                    <circle cx="287.5" cy="287.5" fill="#e74c3c"/>
-                    <circle cx="375" cy="287.5" fill="#e74c3c"/>
+                    <circle cx="25" cy="287.5" data-row="3" data-col="0"/>
+                    <circle cx="112.5" cy="287.5" data-row="3" data-col="1"/>
+                    <circle cx="200" cy="287.5" data-row="3" data-col="2"/>
+                    <circle cx="287.5" cy="287.5" data-row="3" data-col="3"/>
+                    <circle cx="375" cy="287.5" data-row="3" data-col="4"/>
 
                     <!-- Linha 4 -->
-                    <circle cx="25" cy="375" fill="#e74c3c"/>
-                    <circle cx="112.5" cy="375" fill="#e74c3c"/>
-                    <circle cx="200" cy="375" fill="#e74c3c"/>
-                    <circle cx="287.5" cy="375" fill="#e74c3c"/>
-                    <circle cx="375" cy="375" fill="#e74c3c"/>
+                    <circle cx="25" cy="375" data-row="4" data-col="0"/>
+                    <circle cx="112.5" cy="375" data-row="4" data-col="1"/>
+                    <circle cx="200" cy="375" data-row="4" data-col="2"/>
+                    <circle cx="287.5" cy="375" data-row="4" data-col="3"/>
+                    <circle cx="375" cy="375" data-row="4" data-col="4"/>
                 </g>
             </svg>
 
         </div>
         <div class="game-buttons">
-            <button class="gbtn"> Draw </button>
-            <button class="gbtn"> Withdraw  </button>
-            <button class="gbtn"> Start </button>
+            <button class="gbtn hidden" id="draw-btn"> Draw </button>
+            <button class="gbtn hidden" id="withdraw-btn"> Withdraw </button>
+            <button class="gbtn" id="start-btn" onclick="startGame()"> Start </button>
         </div>
     </main>
 
