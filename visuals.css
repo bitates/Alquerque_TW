@@ -272,7 +272,7 @@ h2 {
 }
 
 .pieces circle{
-    r: 20px; /* radious */
+    /*r: 20px;   /* radious */
     stroke-width: 2.5;
 }
 

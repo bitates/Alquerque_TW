@@ -32,3 +32,7 @@ Conteúdo
     padding: 10px;        /* Space between content and border */
     margin: 20px;         /* Space outside the box */ 
 }
+
+
+
+alert(`Jogador ${player} ganhou! Fim do jogo.`);

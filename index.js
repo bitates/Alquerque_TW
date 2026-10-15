@@ -21,10 +21,6 @@ document.addEventListener("keydown", e => {
     if (e.key === "Escape") closePopup();
 });
 
-function test() {
-    console.log("test");
-}
-
 //GAME LOGIC
 
 // Estado do Jogo: 5x5
@@ -47,6 +43,12 @@ let boardState = [
 
 let currentPlayer = 1;
 let selectedPiece = null; // guarda {row, col} da peça selecionada
+let gameStarted = false;
+
+//timer variables
+let timerInterval = null;
+let timeLeft1 = 600; //10min
+let timeLeft2 = 600;
 
 //adiciona um listnener pra cada peça do tabuleiro
 document.addEventListener("DOMContentLoaded", () => {
@@ -65,11 +67,16 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function handleCellClick(row, col) {
+    if (!gameStarted) {
+        return;
+    }
+
     const clickedPieceOwner = boardState[row][col];
     if (!selectedPiece) {
         if (clickedPieceOwner === currentPlayer) {
             selectedPiece = { row, col };
             console.log(`Selected piece at (${row}, ${col})`);
+            updateBoardUI(); //atualiza visual pra mostrar circulos amarelos
         }
     //ja existe peça selecionada, o jogador clica no destino(ou noutra oeça tua)
     } else {
@@ -84,23 +91,44 @@ function handleCellClick(row, col) {
         // Se clicar num espaço vazio, tenta mover
         if( clickedPieceOwner === 0) {
             if(isvalidMove(selectedPiece.row, selectedPiece.col, row, col)) {
-                // Move a peça
+                // Verificar se foi um movimento de captura (salto de 2 casas)
+                const rowDiff = row - selectedPiece.row;
+                const colDiff = col - selectedPiece.col;
+                const isCapture = Math.abs(rowDiff) === 2 || Math.abs(colDiff) === 2;
+
+                let capturedRow, capturedCol;
+                if (isCapture) {
+                    capturedRow = selectedPiece.row + rowDiff / 2;
+                    capturedCol = selectedPiece.col + colDiff / 2;
+                    // Remove a peça adversária capturada
+                    boardState[capturedRow][capturedCol] = 0;
+                }
+                
+                // Move a peça principal
                 boardState[row][col] = currentPlayer;
                 boardState[selectedPiece.row][selectedPiece.col] = 0;
-                console.log(`Moved piece from (${selectedPiece.row}, ${selectedPiece.col}) to (${row}, ${col})`);
+                const oldRow = selectedPiece.row;
+                const oldCol = selectedPiece.col;
+                selectedPiece = null;
 
                 updateBoardUI(); //atualiza visual tabuleiro
-                logMove(selectedPiece.row, selectedPiece.col, row, col); //log do movimento
+                updatePieceCounts(); // Atualiza os contadores no painel lateral
+                if (isCapture) {
+                    logMove(oldRow, oldCol, row, col, true);
+                } else {
+                    logMove(oldRow, oldCol, row, col, false);
+                }
 
                 // Alterna o jogador
                 currentPlayer = currentPlayer === 1 ? 2 : 1;
-                console.log(`Current player is now: ${currentPlayer}`);
                 updateTurnIndicator(); //atualiza visual do jogador atual
             } else {
                 console.log("Movimento inválido!");
             }
+        } else {
+            selectedPiece = null; //dá clear no fim
+            updateBoardUI();
         }
-        selectedPiece = null; //dá clear no fim
     }
 }
 
@@ -111,31 +139,73 @@ function updateBoardUI() {
         const row = parseInt(circle.getAttribute("data-row"));
         const col = parseInt(circle.getAttribute("data-col"));
         const owner = boardState[row][col];
+        
+        //verifica se esta é a peça selecionada
+        const isSelected = selectedPiece && selectedPiece.row === row && selectedPiece.col === col;
+
+        //Vê se casa vazia é um movimento válido para a peça selecionada
+        let isValidDestination = false;
+        if (selectedPiece && owner === 0) {
+            isValidDestination = isvalidMove(selectedPiece.row, selectedPiece.col, row, col);
+        }
+
         //definir cor consoante o dono
         if (owner === 1) {
             circle.setAttribute("fill", "#2c3e50"); // Player 1 color
             circle.setAttribute("stroke", "#241403"); 
+            circle.setAttribute("r", "20");
         } else if (owner === 2) {
             circle.setAttribute("fill", "#e74c3c"); // Player 2 color
             circle.setAttribute("stroke", "#241403"); 
-        } else {
+            circle.setAttribute("r", "20");
+        } else if (isValidDestination) {
+            circle.setAttribute("fill", "#b6b6b6"); // Círculo amarelo/dourado para dica de movimento!
+            circle.setAttribute("stroke", "#241403"); 
+            circle.setAttribute("r", "10");
+        }else {
             circle.setAttribute("fill", "transparent"); // Empty space
             circle.setAttribute("stroke", "transparent"); 
+        }
+
+        //efeito 3D na peça selecionada
+        if (isSelected) {
+            circle.style.transform = "translateY(-6px)";
+            circle.style.filter = "drop-shadow(0px 8px 4px rgba(0, 0, 0, 0.4))";
+        } else {
+            circle.style.transform = "none";
+            circle.style.filter = "none";
         }
     });
 }
 
 //dá log do movimento no painel de texto
-function logMove(fromR, fromC, toR, toC) {
+function logMove(fromR, fromC, toR, toC, isCapture) {
     const gameText = document.getElementById("gameText");
-    if (gameText) {
+    if (gameText && fromR !== undefined) {
         const colsName = ['a', 'b', 'c', 'd', 'e'];
         const fromStr = `${colsName[fromC]}${fromR + 1}`;
         const toStr = `${colsName[toC]}${toR + 1}`;
         
-        gameText.innerHTML += `<br>> Jogador ${currentPlayer} moveu de ${fromStr} para ${toStr}`;
+        if (isCapture) {
+            gameText.innerHTML += `<br>> ⚔️ Jogador ${currentPlayer} capturou saltando de ${fromStr} para ${toStr}`;
+        } else {
+            gameText.innerHTML += `<br>> Jogador ${currentPlayer} moveu de ${fromStr} para ${toStr}`;
+        }
         gameText.scrollTop = gameText.scrollHeight;
     }
+}
+
+function updatePieceCounts() {
+    let p1Count = 0;
+    let p2Count = 0;
+    for (let r = 0; r < 5; r++) {
+        for (let c = 0; c < 5; c++) {
+            if (boardState[r][c] === 1) p1Count++;
+            if (boardState[r][c] === 2) p2Count++;
+        }
+    }
+    document.getElementById("p1-count").textContent = p1Count;
+    document.getElementById("p2-count").textContent = p2Count;
 }
 
 //muda o UI do turno de cada player
@@ -166,36 +236,82 @@ function isvalidMove(fromRow, fromCol, toRow, toCol) {
     const absRowDiff = Math.abs(rowDiff);     // Correção: usar Math.abs
     const absColDiff = Math.abs(colDiff);     // Correção: usar Math.abs
 
-    // 1. O movimento tem de ser estritamente adjacente (1 casa em qualquer direção)
-    if (absRowDiff > 1 || absColDiff > 1 || (absRowDiff === 0 && absColDiff === 0)) {
-        return false;
-    }
+    // Destino tem de estar vazio
+    if (boardState[toRow][toCol] !== 0) return false;
+    
+    //MOVIMENTO NORMAL DE 1 PASSO
+    if (absRowDiff <= 1 && absColDiff <= 1 && !(absRowDiff === 0 && absColDiff === 0)) {
+        //a peça n pode voltar pra tras
+        if (currentPlayer === 1 && rowDiff > 0) return false;
+        if (currentPlayer === 2 && rowDiff < 0) return false;
 
-    // 2. Regra de direção: A peça não pode retroceder em direção à sua fila inicial
-    if (currentPlayer === 1 && rowDiff > 0) {
-        console.log("Movimento inválido: Jogador 1 não pode retroceder!");
-        return false;
-    }
-    if (currentPlayer === 2 && rowDiff < 0) {
-        console.log("Movimento inválido: Jogador 2 não pode retroceder!");
-        return false;
-    }
-
-    // 3. Restrições de nós onde NÃO se pode andar na diagonal
-    // (Corrigidos os typos para verificar corretamente fromCol)
-    if ((fromRow % 2 === 0) && (fromCol === 1 || fromCol === 3)) {
-        if (colDiff === rowDiff || colDiff + rowDiff === 0) {
-            return false; // Movimento diagonal proibido nesta posição
+        //peças que NAO podem andar na diagonal
+        if ((fromRow % 2 === 0) && (fromCol === 1 || fromCol === 3)) {
+            if (colDiff === rowDiff || colDiff + rowDiff === 0) {
+                return false; // Movimento diagonal proibido nesta posição
+            }
+        } 
+        else if ((fromRow % 2 === 1) && (fromCol === 0 || fromCol === 2 || fromCol === 4)) {
+            if (colDiff === rowDiff || colDiff + rowDiff === 0) {
+                return false; // Movimento diagonal proibido nesta posição
+            }
         }
-    } 
-    else if ((fromRow % 2 === 1) && (fromCol === 0 || fromCol === 2 || fromCol === 4)) {
-        if (colDiff === rowDiff || colDiff + rowDiff === 0) {
-            return false; // Movimento diagonal proibido nesta posição
-        }
+        return true;
     }
 
-    // Se passou por todas as validações, o movimento é válido!
-    return true;
+    //CAPTURA DE 2 PASSOS (SALTO)
+    if ((absRowDiff === 2 && absColDiff === 0) || 
+        (absRowDiff === 0 && absColDiff === 2) || 
+        (absRowDiff === 2 && absColDiff === 2)) {
+        
+        //posição da peça intermédia que está a ser saltada
+        const middleRow = fromRow + rowDiff / 2;
+        const middleCol = fromCol + colDiff / 2;
+        const middlePiece = boardState[middleRow][middleCol];
+
+        // A peça do meio tem de pertencer ao adversário
+        const opponent = currentPlayer === 1 ? 2 : 1;
+        if (middlePiece !== opponent) return false;
+
+        // Nota regra do Alquerque: Saltos de captura podem ser feitos para trás em qualquer direção,
+        // exceto se as peças estiverem na última fila (regras avançadas podem ser ajustadas depois, mas esta base cobre os saltos padrão).
+        return true;
+    }
+
+    // Se nao passou as validações, retorna false
+    return false;
+}
+
+function updateTimerUI() {
+    const formatTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const timerP1 = document.getElementById("timer-p1");
+    const timerP2 = document.getElementById("timer-p2");
+
+    if (timerP1) timerP1.textContent = formatTime(timeLeft1);
+    if (timerP2) timerP2.textContent = formatTime(timeLeft2);
+}
+
+function handleTimeOut(player) {
+    clearInterval(timerInterval);
+    gameStarted = false;
+    logMoveText(`Tempo esgotado para o Jogador ${player}! Fim do jogo.`);
+}
+
+function logMoveText(message) {
+    const gameText = document.getElementById("gameText");
+    if (gameText) {
+        if (gameText.innerHTML.trim() === "") {
+            gameText.innerHTML = `${message}`;
+        } else {
+            gameText.innerHTML += `<br>> ${message}`;
+        }
+        gameText.scrollTop = gameText.scrollHeight;
+    }
 }
 
 function startGame() {
@@ -204,6 +320,39 @@ function startGame() {
     updateBoardUI(); //atualiza visual tabuleiro
     currentPlayer = 1; // Reset current player
     updateTurnIndicator(); //atualiza visual do jogador atual
+
+    //msg de inicio do jogo
+    const gameText = document.getElementById("gameText");
+    gameText.innerHTML = ""; // Limpa o log do jogo
+    logMoveText("Jogo iniciado! Jogador 1 começa.");
+
+    gameStarted = true;
+    timeLeft1 = 600;
+    timeLeft2 = 600;
+    updateTimerUI();
+
+    // Se já houver um timer a correr, limpa-o antes de iniciar outro
+    if (timerInterval) clearInterval(timerInterval);
+
+    // Inicia o intervalo de 1 em 1 segundo
+    timerInterval = setInterval(() => {
+        if (!gameStarted) return;
+
+        if (currentPlayer === 1) {
+            if (timeLeft1 > 0) {
+                timeLeft1--;
+            } else {
+                handleTimeOut(1);
+            }
+        } else {
+            if (timeLeft2 > 0) {
+                timeLeft2--;
+            } else {
+                handleTimeOut(2);
+            }
+        }
+        updateTimerUI();
+    }, 1000);
 }
 
 
