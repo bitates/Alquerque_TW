@@ -114,6 +114,11 @@
             <button class="btn"> 👑 Leaderboard </button>
             <button class="btn" onclick="openPopup('themes')"> 🖌️ Themes </button>
             <button class="btn" onclick="openPopup('credits')"> 🌟 Credits </button>
+
+            <button class="gbtn hidden" id="draw-btn">Draw</button>
+            <button class="gbtn hidden" id="withdraw-btn">Resign</button>
+            <button class="gbtn" id="start-btn" onclick="startGame()">Start</button>
+        </div>
         </div>
     </aside>
 
@@ -234,11 +239,6 @@
                 </g>
             </svg>
 
-        </div>
-        <div class="game-buttons">
-            <button class="gbtn hidden" id="draw-btn"> Draw </button>
-            <button class="gbtn hidden" id="withdraw-btn"> Withdraw </button>
-            <button class="gbtn" id="start-btn" onclick="startGame()"> Start </button>
         </div>
     </main>
 

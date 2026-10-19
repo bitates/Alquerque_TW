@@ -36,3 +36,58 @@ Conteúdo
 
 
 alert(`Jogador ${player} ganhou! Fim do jogo.`);
+
+
+
+
+//MOVIMENTO NORMAL DE 1 PASSO
+    if (absRowDiff <= 1 && absColDiff <= 1 && !(absRowDiff === 0 && absColDiff === 0)) {
+        //a peça n pode voltar pra tras
+        if (currentPlayer === 1 && rowDiff > 0) return false;
+        if (currentPlayer === 2 && rowDiff < 0) return false;
+
+        //peças que NAO podem andar na diagonal
+        if ((fromRow % 2 === 0) && (fromCol === 1 || fromCol === 3)) {
+            if (colDiff === rowDiff || colDiff + rowDiff === 0) {
+                return false; // Movimento diagonal proibido nesta posição
+            }
+        } 
+        else if ((fromRow % 2 === 1) && (fromCol === 0 || fromCol === 2 || fromCol === 4)) {
+            if (colDiff === rowDiff || colDiff + rowDiff === 0) {
+                return false; // Movimento diagonal proibido nesta posição
+            }
+        }
+        return true;
+    }
+
+
+ // Destino tem de estar vazio
+    if (boardState[toRow][toCol] !== 0) return false;
+
+    // 1. O movimento tem de ser estritamente adjacente (1 casa em qualquer direção)
+    if (absRowDiff > 1 || absColDiff > 1 || (absRowDiff === 0 && absColDiff === 0)) {
+        return false;
+    }
+
+    // 2. Regra de direção: A peça não pode retroceder em direção à sua fila inicial
+    if (currentPlayer === 1 && rowDiff > 0) {
+        console.log("Movimento inválido: Jogador 1 não pode retroceder!");
+        return false;
+    }
+    if (currentPlayer === 2 && rowDiff < 0) {
+        console.log("Movimento inválido: Jogador 2 não pode retroceder!");
+        return false;
+    }
+
+    // 3. Restrições de nós onde NÃO se pode andar na diagonal
+    // (Corrigidos os typos para verificar corretamente fromCol)
+    if ((fromRow % 2 === 0) && (fromCol === 1 || fromCol === 3)) {
+        if (colDiff === rowDiff || colDiff + rowDiff === 0) {
+            return false; // Movimento diagonal proibido nesta posição
+        }
+    } 
+    else if ((fromRow % 2 === 1) && (fromCol === 0 || fromCol === 2 || fromCol === 4)) {
+        if (colDiff === rowDiff || colDiff + rowDiff === 0) {
+            return false; // Movimento diagonal proibido nesta posição
+        }
+    }

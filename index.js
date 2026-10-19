@@ -81,9 +81,15 @@ function handleCellClick(row, col) {
     //ja existe peça selecionada, o jogador clica no destino(ou noutra oeça tua)
     } else {
         // Se clicar numa peca diferente tua, muda a selecao para essa nova peça
-        if (clickedPieceOwner === currentPlayer) {
+        if (clickedPieceOwner === currentPlayer && (selectedPiece.row !== row || selectedPiece.col !== col)) {
             selectedPiece = { row, col };
             console.log(`Selected piece changed to: (${row}, ${col})`);
+            updateBoardUI();
+            return;
+        }
+
+        if (clickedPieceOwner === currentPlayer && (selectedPiece.row === row || selectedPiece.col === col)) {
+            selectedPiece = null; //dá clear no fim
             updateBoardUI();
             return;
         }
@@ -113,15 +119,15 @@ function handleCellClick(row, col) {
 
                 updateBoardUI(); //atualiza visual tabuleiro
                 updatePieceCounts(); // Atualiza os contadores no painel lateral
+
                 if (isCapture) {
                     logMove(oldRow, oldCol, row, col, true);
                 } else {
                     logMove(oldRow, oldCol, row, col, false);
+                    // Alterna o jogador
+                    currentPlayer = currentPlayer === 1 ? 2 : 1;
+                    updateTurnIndicator(); //atualiza visual do jogador atual
                 }
-
-                // Alterna o jogador
-                currentPlayer = currentPlayer === 1 ? 2 : 1;
-                updateTurnIndicator(); //atualiza visual do jogador atual
             } else {
                 console.log("Movimento inválido!");
             }
@@ -236,9 +242,6 @@ function isvalidMove(fromRow, fromCol, toRow, toCol) {
     const absRowDiff = Math.abs(rowDiff);     // Correção: usar Math.abs
     const absColDiff = Math.abs(colDiff);     // Correção: usar Math.abs
 
-    // Destino tem de estar vazio
-    if (boardState[toRow][toCol] !== 0) return false;
-    
     //MOVIMENTO NORMAL DE 1 PASSO
     if (absRowDiff <= 1 && absColDiff <= 1 && !(absRowDiff === 0 && absColDiff === 0)) {
         //a peça n pode voltar pra tras
@@ -258,7 +261,7 @@ function isvalidMove(fromRow, fromCol, toRow, toCol) {
         }
         return true;
     }
-
+    
     //CAPTURA DE 2 PASSOS (SALTO)
     if ((absRowDiff === 2 && absColDiff === 0) || 
         (absRowDiff === 0 && absColDiff === 2) || 
@@ -275,11 +278,22 @@ function isvalidMove(fromRow, fromCol, toRow, toCol) {
 
         // Nota regra do Alquerque: Saltos de captura podem ser feitos para trás em qualquer direção,
         // exceto se as peças estiverem na última fila (regras avançadas podem ser ajustadas depois, mas esta base cobre os saltos padrão).
+        if ((fromRow % 2 === 0) && (fromCol === 1 || fromCol === 3)) {
+            if (colDiff === rowDiff || colDiff + rowDiff === 0) {
+                return false; // Movimento diagonal proibido nesta posição
+            }
+        } 
+        else if ((fromRow % 2 === 1) && (fromCol === 0 || fromCol === 2 || fromCol === 4)) {
+            if (colDiff === rowDiff || colDiff + rowDiff === 0) {
+                return false; // Movimento diagonal proibido nesta posição
+            }
+        }
         return true;
     }
 
     // Se nao passou as validações, retorna false
     return false;
+    
 }
 
 function updateTimerUI() {
@@ -316,6 +330,9 @@ function logMoveText(message) {
 
 function startGame() {
     console.log("Jogo iniciado!");
+    document.getElementById("start-btn").classList.add("hidden");
+    document.getElementById("draw-btn").classList.remove("hidden");
+    document.getElementById("withdraw-btn").classList.remove("hidden");
     boardState = JSON.parse(JSON.stringify(initialState)); // Reset board state
     updateBoardUI(); //atualiza visual tabuleiro
     currentPlayer = 1; // Reset current player
@@ -355,4 +372,13 @@ function startGame() {
     }, 1000);
 }
 
-
+/*
+function sopro(){
+    for(let col = 0; col < 5; col++){
+        for  (let line = 0; line < 5; line++){
+        
+            
+        }
+    }
+}
+*/
