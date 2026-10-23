@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Alquerque</title>
-    <script src="index.js" defer></script>
+    <script src="game.js" defer></script>
+    
     <link rel="stylesheet" href="visuals.css">
 </head>
 
@@ -23,8 +24,8 @@
                 <li><strong>Developers:</strong> 
                     <ul>
                         <li>Simão Ribeiro - 202406281</li>
-                        <li>Martim Henriques Oliveira - 202407302</li>
-                        <li>Guilherme Gonçalves  - 202407276</li>
+                        <li>Martim Oliveira - 202407302</li>
+                        <li>William Madeira  - 202407276</li>
                     </ul>
                 </li>
             </ul>
@@ -99,6 +100,21 @@
                 </li>
             </ul>
         </div>
+
+        <div id="panel-draw" class="panel">
+            <h2>Accept Draw?</h2>
+            <div class="level">
+                <button class="btn-easy" onclick="endGame()">Yes</button> 
+                <button class="btn-hard" onclick="closePopup()">No</button> 
+            </div>
+        </div>
+        <div id="panel-endGame" class="panel">
+            <h2>END</h2>
+            <div class="level">
+                <button class="btn-easy" onclick="endGame()">Yes</button> 
+                <button class="btn-hard" onclick="closePopup()">No</button> 
+            </div>
+        </div>
     </div>
 </div>
 
@@ -115,9 +131,11 @@
             <button class="btn" onclick="openPopup('themes')"> 🖌️ Themes </button>
             <button class="btn" onclick="openPopup('credits')"> 🌟 Credits </button>
 
-            <button class="gbtn hidden" id="draw-btn">Draw</button>
-            <button class="gbtn hidden" id="withdraw-btn">Resign</button>
-            <button class="gbtn" id="start-btn" onclick="startGame()">Start</button>
+            <button class="gbtn hidden" id="end-chain-btn">End turn</button>
+            <button class="gbtn hidden" id="draw-btn" onclick="openPopup('draw')">Draw</button>
+            <button class="gbtn hidden" id="resign-btn" onclick="endGame()">Resign</button>
+            <button class="gbtn" id="start-btn" onclick="startGame()">Player vs Player</button>
+            <button class="gbtn" id="start-ai-btn" onclick="startGame()">Player vs AI</button>
         </div>
         </div>
     </aside>
@@ -228,6 +246,8 @@
                     <circle cx="112.5" cy="287.5" data-row="3" data-col="1"/>
                     <circle cx="200" cy="287.5" data-row="3" data-col="2"/>
                     <circle cx="287.5" cy="287.5" data-row="3" data-col="3"/>
+                   
+                   
                     <circle cx="375" cy="287.5" data-row="3" data-col="4"/>
 
                     <!-- Linha 4 -->
@@ -241,6 +261,5 @@
 
         </div>
     </main>
-
 </body>
 </html>

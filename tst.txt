@@ -91,3 +91,259 @@ alert(`Jogador ${player} ganhou! Fim do jogo.`);
             return false; // Movimento diagonal proibido nesta posição
         }
     }
+
+
+    ----------------------------------------------------------------------
+
+
+
+
+
+    function isvalidMove(fromRow, fromCol, toRow, toCol) {
+    const rowDiff = toRow - fromRow;          // Positivo = desce, Negativo = sobe
+    const colDiff = toCol - fromCol;
+    const absRowDiff = Math.abs(rowDiff);     // Correção: usar Math.abs
+    const absColDiff = Math.abs(colDiff);     // Correção: usar Math.abs
+
+    //MOVIMENTO NORMAL DE 1 PASSO
+    if (absRowDiff <= 1 && absColDiff <= 1 && !(absRowDiff === 0 && absColDiff === 0)) {
+        //a peça n pode voltar pra tras
+        if (currentPlayer === 1 && rowDiff > 0) return false;
+        if (currentPlayer === 2 && rowDiff < 0) return false;
+
+        //peças que NAO podem andar na diagonal
+        if ((fromRow % 2 === 0) && (fromCol === 1 || fromCol === 3)) {
+            if (colDiff === rowDiff || colDiff + rowDiff === 0) {
+                return false; // Movimento diagonal proibido nesta posição
+            }
+        } 
+        else if ((fromRow % 2 === 1) && (fromCol === 0 || fromCol === 2 || fromCol === 4)) {
+            if (colDiff === rowDiff || colDiff + rowDiff === 0) {
+                return false; // Movimento diagonal proibido nesta posição
+            }
+        }
+        return true;
+    }
+
+    //CAPTURA DE 2 PASSOS (SALTO)
+    if ((absRowDiff === 2 && absColDiff === 0) || 
+        (absRowDiff === 0 && absColDiff === 2) || 
+        (absRowDiff === 2 && absColDiff === 2)) {
+        
+        //posição da peça intermédia que está a ser saltada
+        const middleRow = fromRow + rowDiff / 2;
+        const middleCol = fromCol + colDiff / 2;
+        const middlePiece = boardState[middleRow][middleCol];
+
+        // A peça do meio tem de pertencer ao adversário
+        const opponent = currentPlayer === 1 ? 2 : 1;
+        if (middlePiece !== opponent) return false;
+
+        // Nota regra do Alquerque: Saltos de captura podem ser feitos para trás em qualquer direção,
+        // exceto se as peças estiverem na última fila (regras avançadas podem ser ajustadas depois, mas esta base cobre os saltos padrão).
+        if ((fromRow % 2 === 0) && (fromCol === 1 || fromCol === 3)) {
+            if (colDiff === rowDiff || colDiff + rowDiff === 0) {
+                return false; // Movimento diagonal proibido nesta posição
+            }
+        } 
+        else if ((fromRow % 2 === 1) && (fromCol === 0 || fromCol === 2 || fromCol === 4)) {
+            if (colDiff === rowDiff || colDiff + rowDiff === 0) {
+                return false; // Movimento diagonal proibido nesta posição
+            }
+        }
+        return true;
+    }
+
+    // Se nao passou as validações, retorna false
+    return false;
+    
+}
+
+
+function handleCellClick(row, col) {
+    if (!gameStarted) {
+        return;
+    }
+
+    const clickedPieceOwner = boardState[row][col];
+    if (!selectedPiece) {
+        if (clickedPieceOwner === currentPlayer) {
+            selectedPiece = { row, col };
+            console.log(`Selected piece at (${row}, ${col})`);
+            updateBoardUI(); //atualiza visual pra mostrar circulos amarelos
+        }
+    //ja existe peça selecionada, o jogador clica no destino(ou noutra oeça tua)
+    } else {
+        // Se clicar numa peca diferente tua, muda a selecao para essa nova peça
+        if (clickedPieceOwner === currentPlayer && (selectedPiece.row !== row || selectedPiece.col !== col)) {
+            selectedPiece = { row, col };
+            console.log(`Selected piece changed to: (${row}, ${col})`);
+            updateBoardUI();
+            return;
+        }
+
+        if (clickedPieceOwner === currentPlayer && (selectedPiece.row === row || selectedPiece.col === col)) {
+            selectedPiece = null; //dá clear no fim
+            updateBoardUI();
+            return;
+        }
+
+        // Se clicar num espaço vazio, tenta mover
+        if( clickedPieceOwner === 0) {
+            if(isvalidMove(selectedPiece.row, selectedPiece.col, row, col) || isvalidEat(selectedPiece.row, selectedPiece.col, row, col)) {
+                // Verificar se foi um movimento de captura (salto de 2 casas)
+                const rowDiff = row - selectedPiece.row;
+                const colDiff = col - selectedPiece.col;
+                const isCapture = Math.abs(rowDiff) === 2 || Math.abs(colDiff) === 2;
+
+                let capturedRow, capturedCol;
+                if (isCapture) {
+                    capturedRow = selectedPiece.row + rowDiff / 2;
+                    capturedCol = selectedPiece.col + colDiff / 2;
+                    // Remove a peça adversária capturada
+                    boardState[capturedRow][capturedCol] = 0;
+                }
+                
+                // Move a peça principal
+                boardState[row][col] = currentPlayer;
+                boardState[selectedPiece.row][selectedPiece.col] = 0;
+                const oldRow = selectedPiece.row;
+                const oldCol = selectedPiece.col;
+                selectedPiece = null;
+
+                updateBoardUI(); //atualiza visual tabuleiro
+
+                let p1Count = 0;
+                let p2Count = 0;
+                for (let r = 0; r < 5; r++) {
+                    for (let c = 0; c < 5; c++) {
+                        if (boardState[r][c] === 1) p1Count++;
+                        if (boardState[r][c] === 2) p2Count++;
+                    }
+                }
+                if(p1Count === 0 || p2Count === 0) {
+                    EndGame();
+                } else {
+                    updatePieceCounts(); // Atualiza os contadores no painel lateral
+                }
+
+                if (isCapture) {
+                    logMove(oldRow, oldCol, row, col, true);
+                } else {
+                    logMove(oldRow, oldCol, row, col, false);
+                    // Alterna o jogador
+                    currentPlayer = currentPlayer === 1 ? 2 : 1;
+                    updateTurnIndicator(); //atualiza visual do jogador atual
+                }
+            } else {
+                console.log("Movimento inválido!");
+            }
+        } else {
+            selectedPiece = null; //dá clear no fim
+            updateBoardUI();
+        }
+    }
+}
+
+let initialState = [
+    [2, 2, 2, 2, 2],
+    [2, 2, 2, 2, 2],
+    [2, 2, 0, 1, 1], 
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1]
+];
+
+let boardState = [
+    [2, 2, 2, 2, 2],
+    [2, 2, 2, 2, 2],
+    [2, 2, 0, 1, 1], 
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1]
+];
+
+
+
+------------------------------------  handleCellClick
+
+function handleCellClick(row, col) {
+    
+    if (!gameStarted) {
+        return;
+    }
+
+    const clickedPieceOwner = boardState[row][col];
+
+    // Nenhuma peça selecionada: seleciona se for tua
+    if (!selectedPiece) {
+        if (clickedPieceOwner === currentPlayer) {
+            selectedPiece = { row, col };
+            console.log(`Selected piece at (${row}, ${col})`);
+            updateBoardUI();
+        }
+        return;
+    }
+
+    // Já existe peça selecionada
+    if (clickedPieceOwner === currentPlayer) {
+        if (selectedPiece.row !== row || selectedPiece.col !== col) {
+            // Outra peça tua: muda a seleção
+            selectedPiece = { row, col };
+            console.log(`Selected piece changed to: (${row}, ${col})`);
+        } else {
+            // Mesma peça: desseleciona
+            selectedPiece = null;
+        }
+        updateBoardUI();
+        return;
+    }
+
+    // Clicou numa peça adversária: limpa a seleção
+    if (clickedPieceOwner !== 0) {
+        selectedPiece = null;
+        updateBoardUI();
+        return;
+    }
+
+    // Clicou num espaço vazio: tenta mover
+    if (!isvalidMove(selectedPiece.row, selectedPiece.col, row, col) &&
+        !isvalidEat(selectedPiece.row, selectedPiece.col, row, col)) {
+        console.log("Movimento inválido!");
+        return;
+    }
+
+    // Foi captura? (salto de 2 casas)
+    const rowDiff = row - selectedPiece.row;
+    const colDiff = col - selectedPiece.col;
+    const isCapture = Math.abs(rowDiff) === 2 || Math.abs(colDiff) === 2;
+
+    if (isCapture) {
+        const capturedRow = selectedPiece.row + rowDiff / 2;
+        const capturedCol = selectedPiece.col + colDiff / 2;
+        boardState[capturedRow][capturedCol] = 0; // remove a peça capturada
+    }
+
+    // Move a peça
+    boardState[row][col] = currentPlayer;
+    boardState[selectedPiece.row][selectedPiece.col] = 0;
+    const oldRow = selectedPiece.row;
+    const oldCol = selectedPiece.col;
+    selectedPiece = null;
+
+    updateBoardUI();
+    const { p1Count, p2Count } = updatePieceCounts();
+
+    // O log tem de vir ANTES de trocar o jogador
+    logMove(oldRow, oldCol, row, col, isCapture);
+
+    if (p1Count === 0 || p2Count === 0) {
+        endGame();
+        return;
+    }
+
+    // Troca o jogador (sempre, até implementares capturas múltiplas)
+    currentPlayer = currentPlayer === 1 ? 2 : 1;
+    updateTurnIndicator();
+}
+
+
+------------------------------------------------
