@@ -47,6 +47,29 @@ body {
     pointer-events: none;
 }
 
+.game-overlay {
+    /* Fixes the overlay across the entire screen or parent container */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    /* Creates the darkened, semi-transparent background */
+    background-color: rgba(0, 0, 0, 0.6); 
+    
+    /* Modern alternative: Blurs the actual UI elements underneath */
+    backdrop-filter: blur(8px); 
+    
+    /* Pulls this element to the very top layer */
+    z-index: 9999; 
+    
+    /* Centers your "Start Game" button inside the overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 
 h1 {
     color: #E8D5A5;
@@ -250,16 +273,16 @@ h2 {
 } */
 
 .gbtn { /* Game Buttons (Start, Draw, Withdraw) */
-    width: 90%;
-    height: 100px;
+    width: 75%;
+    height: 50px;
     padding: 5px;
-    background-color: #219653; 
-    border: 3px solid white;
-    color: white;
+    background-color: #bb8e3a; 
+    border: 3px solid rgb(224, 194, 93);
+    color: rgb(255, 255, 255);
     
     padding: 12px 18px; 
     border-radius: 15px;
-    font-size: 50px;
+    font-size: 30px;
     cursor: pointer;
     transition: 0.2s;
     justify-content: center;
@@ -391,18 +414,6 @@ h2 {
     gap: 12px;
     font-weight: bold;
     margin-top: 18px;
-    color: #e74c3c;
-}
-
-.level {
-    pointer-events: auto; 
-    z-index: 10;
-    display: flex;
-    flex-direction: row;   
-    align-items: center;    
-    gap: 12px;
-    font-weight: bold;
-    margin-top: 18px;
 }
 
 /* Estilos gerais partilhados por todos os botões */
@@ -429,7 +440,7 @@ h2 {
 
 /* Medium  */
 .btn-medium {
-    background-color: #f39c12;
+    background-color: #dad303;
 }
 .btn-medium:hover {
     background-color: #d68910;
@@ -443,4 +454,39 @@ h2 {
 .btn-hard:hover {
     background-color: #c0392b;
     transform: translateY(-2px);
+}
+
+#start-btn,
+#start-ai-btn,
+#end-chain-btn {
+    font-size: 28px;
+}
+
+#end-chain-btn {
+    background-color: #d68910;
+}
+
+.level button.selected {
+    outline: 3px solid #fefefa;
+    outline-offset: 2px;
+}
+
+
+.pieces circle.huffable {
+    stroke: #f1c40f;
+    stroke-width: 6;
+    cursor: pointer;
+}
+
+#difficulty-box {
+    background-color: #262421;
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    font-size: 22px;
+    font-weight: bold;
+}
+#difficulty-name {
+    color: #dad303;
 }

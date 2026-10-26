@@ -26,25 +26,27 @@ document.addEventListener("keydown", e => {
 // Estado do Jogo: 5x5
 // 0 = Vazio, 1 = Player 1 (ex: #2c3e50), 2 = Player 2 (ex: #e74c3c)
 let initialState = [
-    [0, 2, 0, 0, 0],
-    [0, 2, 0, 0, 0],
-    [0, 2, 0, 1, 0], 
-    [0, 0, 0, 1, 0],
-    [0, 0, 0, 1, 0]
+    [2, 2, 2, 2, 2],
+    [2, 2, 2, 2, 2],
+    [2, 2, 0, 1, 1], 
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1]
 ];
 
 let boardState = [
-    [0, 2, 0, 0, 0],
-    [0, 2, 0, 0, 0],
-    [0, 2, 0, 1, 0], 
-    [0, 0, 0, 1, 0],
-    [0, 0, 0, 1, 0]
+    [2, 2, 2, 2, 2],
+    [2, 2, 2, 2, 2],
+    [2, 2, 0, 1, 1], 
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1]
 ];
 
 let currentPlayer = 1;
 let selectedPiece = null; // guarda {row, col} da peça selecionada
 let chainPiece = null;
 let gameStarted = false;
+let vsAI = false;
+let huffTarget = null; // { offender, lastPiece } 
 
 //timer variables
 let timerInterval = null;
@@ -71,8 +73,14 @@ function handleCellClick(row, col) {
     if (!gameStarted) {
         return;
     }
+    if (vsAI && currentPlayer === 2) return;
 
     const clickedPieceOwner = boardState[row][col];
+
+    if (huffTarget && clickedPieceOwner === huffTarget.offender) {
+    handleHuffClick(row, col);
+    return;
+}
 
     // Nenhuma peça selecionada: seleciona se for tua
     if (!selectedPiece) {
@@ -121,9 +129,12 @@ function handleCellClick(row, col) {
         return;
     }
 
+    huffTarget = null;
     const rowDiff = row - selectedPiece.row;
     const colDiff = col - selectedPiece.col;
     const isCapture = canEat; // só é captura se foi validado como salto
+
+    const skippedCapture = !isCapture && playerHasCapture();
 
     if (isCapture) {
         boardState[selectedPiece.row + rowDiff / 2][selectedPiece.col + colDiff / 2] = 0;
@@ -155,7 +166,7 @@ function handleCellClick(row, col) {
     }
 
     // Fim da jogada
-    endTurn();
+    endTurn(skippedCapture ? { offender: currentPlayer, lastPiece: { row, col } } : null);
 }
 
 function updatePieceCounts() {
@@ -207,6 +218,15 @@ function updateBoardUI() {
         }else {
             circle.setAttribute("fill", "transparent"); // Empty space
             circle.setAttribute("stroke", "transparent"); 
+        }
+
+        const isLastOfOffender = huffTarget && huffTarget.lastPiece.row === row && huffTarget.lastPiece.col === col;
+
+        if (huffTarget && owner === huffTarget.offender && !isLastOfOffender) {
+            circle.setAttribute("stroke", "#f1c40f");
+            circle.style.strokeWidth = "6px";
+        } else {
+            circle.style.strokeWidth = "";
         }
 
         //efeito 3D na peça selecionada
@@ -347,15 +367,19 @@ function logMoveText(message) {
     }
 }
 
-function startGame() {
+function startGame(mode) {
+
     console.log("Jogo iniciado!");
-    document.getElementById("start-btn").classList.add("hidden");
+    if (mode) vsAI = mode === "ai";
+    document.getElementById("pvp-btn").classList.add("hidden");
+    document.getElementById("start-ai-btn").classList.add("hidden");
     document.getElementById("draw-btn").classList.remove("hidden");
     document.getElementById("resign-btn").classList.remove("hidden");
     boardState = JSON.parse(JSON.stringify(initialState)); // Reset board state
     updatePieceCounts();
     selectedPiece = null;
     chainPiece = null;
+    huffTarget = null;
     updateBoardUI(); //atualiza visual tabuleiro
     currentPlayer = 1; // Reset current player
     updateTurnIndicator(); //atualiza visual do jogador atual
@@ -386,6 +410,7 @@ function startGame() {
 
 function endGame(winner, customMessage) {
     document.getElementById("start-btn").classList.remove("hidden");
+    document.getElementById("start-ai-btn").classList.remove("hidden");
     document.getElementById("draw-btn").classList.add("hidden");
     document.getElementById("resign-btn").classList.add("hidden");
     gameStarted = false;
@@ -445,10 +470,72 @@ function cloneBoard(board) {
     return board.map(row => row.slice());
 }
 
-function endTurn() {
+function endTurn(huffOffence = null) {
     chainPiece = null;
     selectedPiece = null;
-    updateBoardUI();
     currentPlayer = opponentOf(currentPlayer);
     updateTurnIndicator();
+    if (huffOffence) startHuff(huffOffence);
+    updateBoardUI();
+    if (vsAI && currentPlayer === 2) setTimeout(aiPlay, 400);
 }
+
+function aiPlay() {
+    if (!gameStarted) return;
+    const move = findBestMove(boardState);
+    if (!move) return endGame(1);
+    logMove(...move.path[0], ...move.path.at(-1), move.captured.length > 0);
+    boardState = applyMove(boardState, move, AI_PLAYER);
+    if (updatePieceCounts().p1Count === 0) return endGame(2);
+    endTurn();
+}
+
+function showPlayButtons(){
+    document.getElementById("start-btn").classList.add("hidden");
+    document.getElementById("pvp-btn").classList.remove("hidden");
+    document.getElementById("start-ai-btn").classList.remove("hidden");
+}
+
+// ooooooooooooooooooooooooo SOPRO ooooooooooooooooooooooooo
+
+// o jogador atual tem alguma captura disponível?
+function playerHasCapture() {
+    for (let r = 0; r < 5; r++) {
+        for (let c = 0; c < 5; c++) {
+            if (boardState[r][c] === currentPlayer && canCaptureFrom(r, c)) return true;
+        }
+    }
+    return false;
+}
+
+function startHuff(offence) {
+    // só há sopro se o infrator tiver outra peça além da última movida
+    let others = 0;
+    for (let r = 0; r < 5; r++) {
+        for (let c = 0; c < 5; c++) {
+            const isLast = r === offence.lastPiece.row && c === offence.lastPiece.col;
+            if (boardState[r][c] === offence.offender && !isLast) others++;
+        }
+    }
+    if (others === 0) return;
+
+    huffTarget = offence;
+    logMoveText(`Sopro! O Jogador ${offence.offender} não capturou. Jogador ${currentPlayer}, clique numa peça dele para a remover (exceto a última movida), ou jogue normalmente.`);
+}
+
+function handleHuffClick(row, col) {
+    if (row === huffTarget.lastPiece.row && col === huffTarget.lastPiece.col) {
+        logMoveText("Não pode soprar a última peça movida pelo adversário.");
+        return;
+    }
+
+    boardState[row][col] = 0;
+    const colsName = ['a', 'b', 'c', 'd', 'e'];
+    logMoveText(` Jogador ${currentPlayer} soprou a peça em ${colsName[col]}${row + 1}.`);
+
+    huffTarget = null;
+    updatePieceCounts();
+    updateBoardUI();
+}
+
+//

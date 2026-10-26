@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Alquerque</title>
     <script src="game.js" defer></script>
+    <script src="ai.js" defer></script>
+
     
     <link rel="stylesheet" href="visuals.css">
 </head>
@@ -38,9 +40,9 @@
             <label><input type="checkbox" id="hintsToggle"> Show possible moves</label>
             <label><input type="checkbox" id="soundToggle"> Sound effects</label>
             <div class="level">
-                <button class="btn-easy">Easy</button> 
-                <button class="btn-medium">Medium</button> 
-                <button class="btn-hard">Hard</button> 
+                <button class="btn-easy" onclick="difficulty(1, 'Easy')">Easy</button> 
+                <button class="btn-medium" onclick="difficulty(3, 'Medium')">Medium</button> 
+                <button class="btn-hard" onclick="difficulty(6, 'Hard')">Hard</button> 
             </div>
         </div>
 
@@ -135,8 +137,9 @@
             <button class="gbtn hidden" id="end-chain-btn">End turn</button>
             <button class="gbtn hidden" id="draw-btn" onclick="openPopup('draw')">Draw</button>
             <button class="gbtn hidden" id="resign-btn" onclick="resignGame()">Resign</button>
-            <button class="gbtn" id="start-btn" onclick="startGame()">Player vs Player</button>
-            <button class="gbtn" id="start-ai-btn" onclick="startGame()">Player vs AI</button>
+            <button class="gbtn" id="start-btn" onclick="showPlayButtons()">Start</button>
+            <button class="gbtn hidden" id="pvp-btn" onclick="startGame('pvp')">Player vs Player</button>
+            <button class="gbtn hidden" id="start-ai-btn" onclick="startGame('ai')">Player vs AI</button>
         </div>
         </div>
     </aside>
@@ -175,8 +178,8 @@
     </aside>
     
 <main class="game-layout">
+        <div id="difficulty-box">Difficulty: <span id="difficulty-name">Medium</span></div>
         <div class="board">
-            
             <svg viewBox="0 0 400 400"
                 xmlns="http://www.w3.org/2000/svg"
                 class="board-grid">
