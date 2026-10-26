@@ -26,19 +26,19 @@ document.addEventListener("keydown", e => {
 // Estado do Jogo: 5x5
 // 0 = Vazio, 1 = Player 1 (ex: #2c3e50), 2 = Player 2 (ex: #e74c3c)
 let initialState = [
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
+    [0, 2, 0, 0, 0],
+    [0, 2, 0, 0, 0],
     [0, 2, 0, 1, 0], 
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0]
+    [0, 0, 0, 1, 0],
+    [0, 0, 0, 1, 0]
 ];
 
 let boardState = [
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
+    [0, 2, 0, 0, 0],
+    [0, 2, 0, 0, 0],
     [0, 2, 0, 1, 0], 
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0]
+    [0, 0, 0, 1, 0],
+    [0, 0, 0, 1, 0]
 ];
 
 let currentPlayer = 1;
@@ -85,7 +85,14 @@ function handleCellClick(row, col) {
 
     // Já existe peça selecionada
     if (clickedPieceOwner === currentPlayer) {
-        if (chainPiece) return; // a meio de uma captura múltipla: não pode trocar
+        if (chainPiece) {
+            // a meio de uma captura múltipla: clicar na própria peça termina a jogada
+            if (chainPiece.row === row && chainPiece.col === col) {
+                logMoveText(`Jogador ${currentPlayer} terminou a captura.`);
+                endTurn();
+            }
+            return; // não pode trocar para outra peça
+        }
 
         if (selectedPiece.row !== row || selectedPiece.col !== col) {
             selectedPiece = { row, col };
@@ -135,7 +142,7 @@ function handleCellClick(row, col) {
         selectedPiece = null;
         chainPiece = null;
         updateBoardUI();
-        EndGame();
+        endGame();
         return;
     }
 
@@ -148,11 +155,7 @@ function handleCellClick(row, col) {
     }
 
     // Fim da jogada
-    chainPiece = null;
-    selectedPiece = null;
-    updateBoardUI();
-    currentPlayer = currentPlayer === 1 ? 2 : 1;
-    updateTurnIndicator();
+    endTurn();
 }
 
 function updatePieceCounts() {
@@ -286,42 +289,27 @@ function isvalidMove(fromRow, fromCol, toRow, toCol) {
 }
 
 function isvalidEat(fromRow, fromCol, toRow, toCol) {
-    // FIX: estas variáveis não estavam definidas -> ReferenceError
+    // destino tem de estar dentro do tabuleiro e vazio
+    if (!insideBoard(toRow, toCol)) return false;
+    if (boardState[toRow][toCol] !== 0) return false;
+
     const rowDiff = toRow - fromRow;
     const colDiff = toCol - fromCol;
     const absRowDiff = Math.abs(rowDiff);
     const absColDiff = Math.abs(colDiff);
-    
-    //CAPTURA DE 2 PASSOS (SALTO)
-    if ((absRowDiff === 2 && absColDiff === 0) || 
-        (absRowDiff === 0 && absColDiff === 2) || 
-        (absRowDiff === 2 && absColDiff === 2)) {
-        
-        //posição da peça intermédia que está a ser saltada
-        const middleRow = fromRow + rowDiff / 2;
-        const middleCol = fromCol + colDiff / 2;
-        const middlePiece = boardState[middleRow][middleCol];
- 
-        // A peça do meio tem de pertencer ao adversário
-        const opponent = currentPlayer === 1 ? 2 : 1;
-        if (middlePiece !== opponent) return false;
- 
-        // Saltos de captura podem ser feitos em qualquer direção (incluindo para trás)
-        if ((fromRow % 2 === 0) && (fromCol === 1 || fromCol === 3)) {
-            if (colDiff === rowDiff || colDiff + rowDiff === 0) {
-                return false; // Movimento diagonal proibido nesta posição
-            }
-        } 
-        else if ((fromRow % 2 === 1) && (fromCol === 0 || fromCol === 2 || fromCol === 4)) {
-            if (colDiff === rowDiff || colDiff + rowDiff === 0) {
-                return false; // Movimento diagonal proibido nesta posição
-            }
-        }
-        return true;
-    }
- 
-    // Se nao passou as validações, retorna false
-    return false;
+
+    const isNormalJump = (absRowDiff === 2 && absColDiff === 0) ||
+                             (absRowDiff === 0 && absColDiff === 2);
+    const isDiagonalJump = absRowDiff === 2 && absColDiff === 2;
+
+    if (!isNormalJump && !isDiagonalJump) return false;
+
+    // salto diagonal só é permitido a partir de casas com diagonais
+    if (isDiagonalJump && !hasDiagonals(fromRow, fromCol)) return false;
+
+    // a peça do meio tem de ser do adversário
+    const middlePiece = boardState[fromRow + rowDiff / 2][fromCol + colDiff / 2];
+    return middlePiece === opponentOf(currentPlayer);
 }
 
 
@@ -443,4 +431,12 @@ function hasDiagonals(r, c) {
 
 function cloneBoard(board) {
     return board.map(row => row.slice());
+}
+
+function endTurn() {
+    chainPiece = null;
+    selectedPiece = null;
+    updateBoardUI();
+    currentPlayer = opponentOf(currentPlayer);
+    updateTurnIndicator();
 }

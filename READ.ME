@@ -1,0 +1,63 @@
+# Jogo de Tabuleiro 5x5
+
+Jogo de tabuleiro para dois jogadores, feito com HTML, CSS e JavaScript. Os jogadores movem peças num tabuleiro de 5x5 e ganha quem capturar todas as peças do adversário.
+
+## Como jogar
+
+1. Abra o ficheiro HTML do projeto no navegador.
+2. Clique em **Start** para iniciar o jogo. O Jogador 1 começa.
+3. Clique numa peça sua para a selecionar. Os destinos válidos aparecem como círculos pequenos cinzentos.
+4. Clique num destino para mover a peça.
+
+## Regras
+
+**Movimento**
+- Cada peça move-se uma casa por turno, para a frente ou para o lado. Não pode recuar.
+- O Jogador 1 avança para cima e o Jogador 2 avança para baixo.
+- Só se pode andar na diagonal a partir de casas com diagonais, isto é, onde `(linha + coluna)` é par.
+
+**Captura**
+- Para capturar, a peça salta por cima de uma peça adversária para uma casa vazia, na horizontal, na vertical ou na diagonal.
+- As capturas podem ser feitas em qualquer direção, incluindo para trás.
+- O salto na diagonal também só é permitido a partir de casas com diagonais.
+
+**Captura múltipla**
+- Depois de capturar, se a mesma peça puder capturar outra vez, a vez mantém-se.
+- Para continuar, clique num destino de captura destacado.
+- Para parar e passar a vez, clique de novo na própria peça.
+- Durante a captura múltipla não é possível trocar para outra peça.
+
+**Fim do jogo**
+- Ganha quem deixar o adversário sem peças.
+- Cada jogador tem 10 minutos de relógio, que só corre durante o seu turno.
+
+## Interface
+
+- Painel de cada jogador com o número de peças e o tempo restante.
+- Indicador do turno atual.
+- Registo das jogadas (ex.: `Jogador 1 moveu de d3 para d2`). As colunas vão de `a` a `e` e as linhas de `1` a `5`.
+
+## Estrutura do código
+
+| Função | O que faz |
+| --- | --- |
+| `handleCellClick` | Trata todos os cliques no tabuleiro (selecionar, mover, capturar, terminar a captura múltipla) |
+| `isvalidMove` | Valida um movimento simples de uma casa |
+| `isvalidEat` | Valida uma captura por salto |
+| `canCaptureFrom` | Verifica se uma peça ainda pode capturar |
+| `endTurn` | Limpa a seleção e passa a vez |
+| `endGame` | Termina o jogo e abre o popup de fim |
+| `updateBoardUI` | Redesenha o tabuleiro e os destinos válidos |
+| `updateTurnIndicator` | Atualiza o indicador do jogador atual |
+| `startGame` | Reinicia o estado e arranca o relógio |
+| `logMove` / `logMoveText` | Escrevem no registo de jogadas |
+
+O estado do tabuleiro fica em `boardState`, uma matriz 5x5 com `0` para vazio, `1` para o Jogador 1 e `2` para o Jogador 2.
+
+## Por fazer
+
+- Declarar o vencedor quando o tempo de um jogador acaba.
+- Implementar os botões de **Empate** e **Desistir**.
+- Detetar quando um jogador não tem jogadas possíveis.
+- Fazer `endGame` receber o vencedor como parâmetro.
+- Posição inicial completa das peças (a atual é de teste).
