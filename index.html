@@ -104,15 +104,16 @@
         <div id="panel-draw" class="panel">
             <h2>Accept Draw?</h2>
             <div class="level">
-                <button class="btn-easy" onclick="endGame()">Yes</button> 
+                <button class="btn-easy" onclick="endGame(null)">Yes</button> 
                 <button class="btn-hard" onclick="closePopup()">No</button> 
             </div>
         </div>
         <div id="panel-endGame" class="panel">
             <h2>END</h2>
+            <p id="endGameMessage"></p>
             <div class="level">
-                <button class="btn-easy" onclick="endGame()">Yes</button> 
-                <button class="btn-hard" onclick="closePopup()">No</button> 
+                <button class="btn-easy" onclick="restartGame()">Play again</button>
+                <button class="btn-hard" onclick="closePopup()">Close</button>
             </div>
         </div>
     </div>
@@ -133,7 +134,7 @@
 
             <button class="gbtn hidden" id="end-chain-btn">End turn</button>
             <button class="gbtn hidden" id="draw-btn" onclick="openPopup('draw')">Draw</button>
-            <button class="gbtn hidden" id="resign-btn" onclick="endGame()">Resign</button>
+            <button class="gbtn hidden" id="resign-btn" onclick="resignGame()">Resign</button>
             <button class="gbtn" id="start-btn" onclick="startGame()">Player vs Player</button>
             <button class="gbtn" id="start-ai-btn" onclick="startGame()">Player vs AI</button>
         </div>

@@ -142,7 +142,7 @@ function handleCellClick(row, col) {
         selectedPiece = null;
         chainPiece = null;
         updateBoardUI();
-        endGame();
+        endGame(currentPlayer);
         return;
     }
 
@@ -353,6 +353,7 @@ function startGame() {
     document.getElementById("draw-btn").classList.remove("hidden");
     document.getElementById("resign-btn").classList.remove("hidden");
     boardState = JSON.parse(JSON.stringify(initialState)); // Reset board state
+    updatePieceCounts();
     selectedPiece = null;
     chainPiece = null;
     updateBoardUI(); //atualiza visual tabuleiro
@@ -373,31 +374,37 @@ function startGame() {
     if (timerInterval) clearInterval(timerInterval);
 
     // Inicia o intervalo de 1 em 1 segundo
-    timerInterval = setInterval(() => {
-        if (!gameStarted) return;
-
-        if (currentPlayer === 1) {
-            if (timeLeft1 > 0) {
-                timeLeft1--;
-            } else {
-                handleTimeOut(1);
-            }
-        } else {
-            if (timeLeft2 > 0) {
-                timeLeft2--;
-            } else {
-                handleTimeOut(2);
-            }
-        }
-        updateTimerUI();
-    }, 1000);
+    if (currentPlayer === 1) {
+        timeLeft1--;
+        if (timeLeft1 <= 0) { updateTimerUI(); handleTimeOut(1); return; }
+        
+    } else {
+        timeLeft2--;
+        if (timeLeft2 <= 0) { updateTimerUI(); handleTimeOut(2); return; }
+    }
 }
 
-function endGame() {
+function endGame(winner, customMessage) {
+    document.getElementById("start-btn").classList.remove("hidden");
+    document.getElementById("draw-btn").classList.add("hidden");
+    document.getElementById("resign-btn").classList.add("hidden");
     gameStarted = false;
     clearInterval(timerInterval);
-    logMoveText(`Jogo terminado! Jogador ${currentPlayer} venceu!`);
+
+    const message = customMessage || (winner ? `O Jogador ${winner} venceu!` : "Empate!");
+    logMoveText(`Jogo terminado! ${message}`);
+    document.getElementById("endGameMessage").textContent = message;
     openPopup("endGame");
+}
+
+function handleTimeOut(player) {
+    logMoveText(`Tempo esgotado para o Jogador ${player}!`);
+    endGame(opponentOf(player));
+}
+
+function resignGame() {
+    const loser = currentPlayer;
+    endGame(opponentOf(loser), `O Jogador ${loser} desistiu e perdeu o jogo.`);
 }
 
 
@@ -419,6 +426,11 @@ function opponentOf(player) {
     } else {
         return 1;
     }
+}
+
+function restartGame() {
+    closePopup();
+    startGame();
 }
 
 function insideBoard(r, c) {
