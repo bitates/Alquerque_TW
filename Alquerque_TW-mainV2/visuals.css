@@ -1,0 +1,512 @@
+@font-face {
+    font-family: 'Umpush Light';
+    src: url('./Umpush Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+/*
+The <body> tag defines the document's body.
+The <body> element contains all the contents of an HTML document, such as headings, paragraphs, images, hyperlinks, tables, lists, etc.
+Note: There can only be one <body> element in an HTML documen
+*/
+
+/* changes the entire page settings */
+body {
+    margin: 0;
+    min-height: 100vh;
+    background-image: url("https://cdn.architextures.org/textures/23/2/oak-veneermdf-none-rz7xim-1200.jpg");
+    font-family: 'Umpush Light', sans-serif;
+}
+
+/* Title in the top-left corner */
+.page-title {
+    position: absolute;
+    top: 15px;
+    left: 20px;
+
+    margin: 0;
+    font-size: 40px;
+    color: black;
+    z-index: 2;
+}
+
+
+.game-layout {
+    position: absolute;
+    top: 0;
+    left: 190px;
+    right: 270px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+}
+
+.game-overlay {
+    /* Fixes the overlay across the entire screen or parent container */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    /* Creates the darkened, semi-transparent background */
+    background-color: rgba(0, 0, 0, 0.6); 
+    
+    /* Modern alternative: Blurs the actual UI elements underneath */
+    backdrop-filter: blur(8px); 
+    
+    /* Pulls this element to the very top layer */
+    z-index: 9999; 
+    
+    /* Centers your "Start Game" button inside the overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+h1 {
+    color: #E8D5A5;
+    margin: 10px 0 20px 0;
+    font-size: 50px;
+    text-align: center;
+    font-family: 'Umpush Light';
+    font-weight: bold;
+}
+
+h2 {
+    font-weight: bold;
+    color: #e7e7e5;
+    font-size: 40px;
+    margin: 5px;
+    text-align: center;
+    font-family: 'Umpush Light';
+}
+
+
+/* board of the game*/
+.board {
+    width: 750px;
+    aspect-ratio: 1 / 1;
+    height: auto;
+    padding: 18px;
+    background-color: rgb(247, 210, 154);
+    border: 10px solid rgb(43, 20, 2);
+    box-sizing: border-box;
+    flex-shrink: 0;
+    border-radius: 25px;
+    pointer-events: auto; /* Garante que o tabuleiro recebe cliques */
+}
+
+/* handles the grid lines of board */
+.board-grid {
+    width: 100%;
+    height: 100%;
+    display: block;
+    fill: none;
+    stroke: rgb(43, 20, 2);
+    stroke-width: 3;
+}
+
+.leftSidebar {
+    margin: 30px;
+    width: 400px;
+    height: auto;
+    padding: 15px 12px;
+    border-radius: 15px;
+    background-color: #262421;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+    border: 2px solid #1B0000;
+}
+
+/* handles the chat sidebar with log of the game*/
+.chatSidebar {
+    position: fixed;
+    top: 10px;
+    right: 20px; /* Distance from the right edge */
+    width: 450px;
+    height: 85vh;
+    z-index: 2;
+    margin: 20px;
+    border-radius: 15px;
+    background-color: #262421;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    box-sizing: border-box;
+    border: 2px solid #1B0000;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.player-status-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #44423f;
+}
+
+.player-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: #363431;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: 0.2s;
+}
+
+.player-card.active {
+    border-color: #e7e7e5;
+    background-color: #44423f;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.15);
+}
+
+.player-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #1b1917;
+}
+
+.player-dot.dark {
+    background-color: #2c3e50;
+}
+
+.player-dot.red {
+    background-color: #e74c3c;
+}
+
+.player-info {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    color: #fefefa;
+    font-size: 15px;
+}
+
+.match-info {
+    text-align: center;
+    color: #E8D5A5;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 2px 0;
+}
+
+.chatSidebar-header {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.chatSidebar-header h2 {
+    font-size: 22px;
+    color: #E8D5A5;
+}
+
+.chatSidebar-text {
+    flex-grow: 1; 
+    background-color: #1b1917;
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 8px;
+    overflow-y: auto;
+    font-size: 14px;
+    color: #fefefa;
+    border: 1px solid #363431;
+}
+
+.sidebar-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.btn {
+    height: 70px;
+    width: 90%;
+    background-color: #44423f; 
+    color: white;
+    border: none;
+    padding: 12px 18px; 
+    border-radius: 8px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.2s;
+    padding: 14px 18px;
+    justify-content: left;
+    gap: 10px;
+    display: flex;
+    align-items: center;
+    font-family: 'Umpush Light', sans-serif;
+    font-weight: bold;
+}
+
+.btn:hover {
+    background-color: #5c5a58;
+    border: 0.1px solid #ffffff;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
+}
+
+/*
+.game-buttons {
+
+    margin-top: 45%;
+    pointer-events: auto; 
+    z-index: 10;
+    display: flex;
+    flex-direction: row;  
+    align-items: center;    
+    gap: 12px;
+    font-weight: bold;
+    margin-top: 18px;
+} */
+
+#start-btn {
+    background-color: #27ae60;
+    border-color: #2ecc71;
+    width: 90%;
+    height: 100px;
+    font-size: 60px;
+}
+
+
+
+
+
+
+.gbtn { /* Game Buttons (Start, Draw, Withdraw) */
+    width: 75%;
+    height: 50px;
+    padding: 5px;
+    background-color: #bb8e3a; 
+    border: 3px solid rgb(224, 194, 93);
+    color: rgb(255, 255, 255);
+    
+    padding: 12px 18px; 
+    border-radius: 15px;
+    font-size: 30px;
+    cursor: pointer;
+    transition: 0.2s;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    font-family: 'Umpush Light', sans-serif;
+    font-weight: bold;
+}
+
+.gbtn:hover {
+
+    border: 0.2px solid #ffffff;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
+}
+.gbtn.resign-btn {
+    background-color: #c0392b;
+    border: 3px solid #e9967a;
+}
+
+.gbtn.resign-btn:hover {
+    background-color: #922b21;
+    border-color: white;
+    box-shadow: 0 0 12px rgba(231, 76, 60, 0.7);
+}
+
+.gbtn.draw-btn {
+    background-color: #922b21;
+    border-color: white;
+    box-shadow: 0 0 12px rgba(231, 76, 60, 0.7);
+}
+
+.gbtn.draw-btn:hover, .gbtn.resign-btn:hover {
+    transform: scale(1.03);
+}
+
+
+.pieces circle{
+    /*r: 20px;   /* radious */
+    stroke-width: 2.5;
+    transition: cx 0.6s ease-in-out, cy 0.6s ease-in-out, filter 0.2s, r 0.2s;
+}
+
+
+.popup-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+.popup-overlay.open { display: flex; }
+
+.popup-content {
+    position: relative;
+    background: #262421;
+    color: #fefefa;
+    padding: 24px 32px;
+    border-radius: 15px;
+    border: 2px solid #1B0000;
+    min-width: 320px;
+    max-width: 90vw;
+    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.panel {
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px; 
+    }
+    
+.popup-content h2 { font-size: 60px; }
+
+.panel .rules-list {
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 20px;
+    font-size: 18px;     
+    line-height: 1.6;   
+}
+
+.panel li{
+    margin-bottom: 10px ;
+}
+
+
+.popup-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    border: none;
+    background: none;
+    color: #fefefa;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.player-timer {
+    background-color: #1b1917;
+    color: #fefefa;
+    font-family: monospace;
+    font-size: 15px;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid #44423f;
+    letter-spacing: 1px;
+}
+
+.player-card.active .player-timer {
+    border-color: #E8D5A5;
+    color: #E8D5A5;
+    background-color: #262421;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.level {
+    pointer-events: auto; 
+    z-index: 10;
+    display: flex;
+    flex-direction: row;   
+    align-items: center;    
+    gap: 12px;
+    font-weight: bold;
+    margin-top: 18px;
+}
+
+/* Estilos gerais partilhados por todos os botões */
+.level button {
+    color: #fefefa;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+
+/* Easy */
+.btn-easy {
+    background-color: #27ae60;
+}
+.btn-easy:hover {
+    background-color: #219653;
+    transform: translateY(-2px);
+}
+
+/* Medium  */
+.btn-medium {
+    background-color: #dad303;
+}
+.btn-medium:hover {
+    background-color: #d68910;
+    transform: translateY(-2px);
+}
+
+/* Hard  */
+.btn-hard {
+    background-color: #e74c3c;
+}
+.btn-hard:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+}
+
+#start-ai-btn,
+#end-chain-btn {
+    font-size: 28px;
+}
+
+#end-chain-btn {
+    background-color: #d68910;
+}
+
+.level button.selected {
+    outline: 3px solid #fefefa;
+    outline-offset: 2px;
+}
+
+
+.pieces circle.huffable {
+    stroke: #f1c40f;
+    stroke-width: 6;
+    cursor: pointer;
+}
+
+#difficulty-box {
+    background-color: #262421;
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    font-size: 22px;
+    font-weight: bold;
+}
+#difficulty-name {
+    color: #dad303;
+}
+
+
+.leaderboard {
+    width: 100%;
+    text-align: center;
+    font-size: 22px;
+}
