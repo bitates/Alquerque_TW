@@ -2,6 +2,7 @@
 
 const AI_PLAYER = 2;          // a máquina é o Player 2
 let aiDepth = 4;
+let difficultyName = "Medium";
 const WIN_SCORE = 100000;
 
 const DIRECTIONS = [
@@ -166,6 +167,19 @@ if (player === AI_PLAYER) {           // MAX
 }
 }
 
+
+
+
+function aiAcceptsDraw() {
+    const aiCount = countPieces(boardState, AI_PLAYER);
+    const humanCount = countPieces(boardState, opponentOf(AI_PLAYER));
+
+    // aceita só se tiver menos de 4 peças E menos peças que o adversário
+    return aiCount < 4 && aiCount < humanCount;
+}
+
+
+
 // Escolhe a melhor jogada da máquina
 function findBestMove(board, depth = aiDepth) {
 const moves = generateMoves(board, AI_PLAYER);
@@ -212,8 +226,24 @@ return best;
 }
 
 function difficulty(depth, name) {
+    difficultyName = name;
     aiDepth = depth;
     const span = document.getElementById("difficulty-name");
     span.textContent = name;
     span.style.color = { Easy: "#27ae60", Medium: "#dad303", Hard: "#e74c3c" }[name];
+}
+
+let scores = {
+    Easy: { human: 0, ai: 0 },
+    Medium: { human: 0, ai: 0 },
+    Hard: { human: 0, ai: 0 }
+};
+
+function saveResult(winner) {
+    if (!vsAI || !winner) return;
+    if (winner === AI_PLAYER) {
+        scores[difficultyName].ai++;
+    } else {
+        scores[difficultyName].human++;
+    }
 }

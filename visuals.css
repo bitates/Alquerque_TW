@@ -490,3 +490,10 @@ h2 {
 #difficulty-name {
     color: #dad303;
 }
+
+
+.leaderboard {
+    width: 100%;
+    text-align: center;
+    font-size: 22px;
+}

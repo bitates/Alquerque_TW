@@ -1,6 +1,7 @@
 
 let popup = document.getElementById("popup");
 
+
 function test() {
     console.log("test");
 }
@@ -44,14 +45,33 @@ let boardState = [
 let currentPlayer = 1;
 let selectedPiece = null; // guarda {row, col} da peça selecionada
 let chainPiece = null;
+let chainVisited = []; // casas já ocupadas pela peça durante a captura múltipla
 let gameStarted = false;
 let vsAI = false;
 let huffTarget = null; // { offender, lastPiece } 
+let aiTimeout = null;
 
 //timer variables
 let timerInterval = null;
 let timeLeft1 = 600; //10min
 let timeLeft2 = 600;
+
+let gameTime = 600;
+
+let turnCounter = 0;
+let lastDrawOfferTurn = -99;
+let drawPending = false;
+const DRAW_COOLDOWN = 5;  // mínimo de turnos entre propostas
+let lastAiDrawOfferTurn = -99; // última vez que a IA propôs
+
+function setTime(minutes) {
+    gameTime = minutes * 60;
+    if (!gameStarted) {
+        timeLeft1 = gameTime;
+        timeLeft2 = gameTime;
+        updateTimerUI();
+    }
+}
 
 //adiciona um listnener pra cada peça do tabuleiro
 document.addEventListener("DOMContentLoaded", () => {
@@ -75,6 +95,8 @@ function handleCellClick(row, col) {
     }
     if (vsAI && currentPlayer === 2) return;
 
+    if (!gameStarted || drawPending) return;
+
     const clickedPieceOwner = boardState[row][col];
 
     if (huffTarget && clickedPieceOwner === huffTarget.offender) {
@@ -97,7 +119,7 @@ function handleCellClick(row, col) {
             // a meio de uma captura múltipla: clicar na própria peça termina a jogada
             if (chainPiece.row === row && chainPiece.col === col) {
                 logMoveText(`Jogador ${currentPlayer} terminou a captura.`);
-                endTurn();
+                endTurn({ offender: currentPlayer, lastPiece: chainPiece });
             }
             return; // não pode trocar para outra peça
         }
@@ -137,6 +159,8 @@ function handleCellClick(row, col) {
     const skippedCapture = !isCapture && playerHasCapture();
 
     if (isCapture) {
+        if (!chainPiece) chainVisited = [{ row: selectedPiece.row, col: selectedPiece.col }];
+
         boardState[selectedPiece.row + rowDiff / 2][selectedPiece.col + colDiff / 2] = 0;
     }
 
@@ -145,6 +169,8 @@ function handleCellClick(row, col) {
     const oldRow = selectedPiece.row;
     const oldCol = selectedPiece.col;
 
+    if (isCapture) chainVisited.push({ row, col }); // regista a nova casa
+    
     // Log ANTES de trocar o jogador
     logMove(oldRow, oldCol, row, col, isCapture);
 
@@ -313,6 +339,8 @@ function isvalidEat(fromRow, fromCol, toRow, toCol) {
     if (!insideBoard(toRow, toCol)) return false;
     if (boardState[toRow][toCol] !== 0) return false;
 
+    if (chainVisited.some(p => p.row === toRow && p.col === toCol)) return false;
+
     const rowDiff = toRow - fromRow;
     const colDiff = toCol - fromCol;
     const absRowDiff = Math.abs(rowDiff);
@@ -349,11 +377,7 @@ function updateTimerUI() {
     if (timerP2) timerP2.textContent = formatTime(timeLeft2);
 }
 
-function handleTimeOut(player) {
-    clearInterval(timerInterval);
-    gameStarted = false;
-    logMoveText(`Tempo esgotado para o Jogador ${player}! Fim do jogo.`);
-}
+
 
 function logMoveText(message) {
     const gameText = document.getElementById("gameText");
@@ -368,7 +392,11 @@ function logMoveText(message) {
 }
 
 function startGame(mode) {
+    turnCounter = 0;
+    lastDrawOfferTurn = -99;
+    drawPending = false;
 
+    clearTimeout(aiTimeout);
     console.log("Jogo iniciado!");
     if (mode) vsAI = mode === "ai";
     document.getElementById("pvp-btn").classList.add("hidden");
@@ -379,6 +407,7 @@ function startGame(mode) {
     updatePieceCounts();
     selectedPiece = null;
     chainPiece = null;
+    chainVisited = [];
     huffTarget = null;
     updateBoardUI(); //atualiza visual tabuleiro
     currentPlayer = 1; // Reset current player
@@ -390,27 +419,34 @@ function startGame(mode) {
     logMoveText("Jogo iniciado! Jogador 1 começa.");
 
     gameStarted = true;
-    timeLeft1 = 600;
-    timeLeft2 = 600;
-    updateTimerUI();
+    timeLeft1 = gameTime;
+    timeLeft2 = gameTime;
+    updateTimerUI()
 
     // Se já houver um timer a correr, limpa-o antes de iniciar outro
     if (timerInterval) clearInterval(timerInterval);
 
-    // Inicia o intervalo de 1 em 1 segundo
-    if (currentPlayer === 1) {
-        timeLeft1--;
-        if (timeLeft1 <= 0) { updateTimerUI(); handleTimeOut(1); return; }
-        
-    } else {
-        timeLeft2--;
-        if (timeLeft2 <= 0) { updateTimerUI(); handleTimeOut(2); return; }
-    }
+
+
+    startTimer();
+}   
+
+
+function startTimer() {
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        if (currentPlayer === 1) timeLeft1--; else timeLeft2--;
+        updateTimerUI();
+        if (timeLeft1 <= 0) handleTimeOut(1);
+        else if (timeLeft2 <= 0) handleTimeOut(2);
+    }, 1000);
 }
 
+
+
 function endGame(winner, customMessage) {
+    saveResult(winner);
     document.getElementById("start-btn").classList.remove("hidden");
-    document.getElementById("start-ai-btn").classList.remove("hidden");
     document.getElementById("draw-btn").classList.add("hidden");
     document.getElementById("resign-btn").classList.add("hidden");
     gameStarted = false;
@@ -471,29 +507,58 @@ function cloneBoard(board) {
 }
 
 function endTurn(huffOffence = null) {
+    turnCounter++;
+    huffTarget = null;
     chainPiece = null;
     selectedPiece = null;
+    chainVisited = [];
     currentPlayer = opponentOf(currentPlayer);
     updateTurnIndicator();
     if (huffOffence) startHuff(huffOffence);
     updateBoardUI();
-    if (vsAI && currentPlayer === 2) setTimeout(aiPlay, 400);
+    if (generateMoves(boardState, currentPlayer).length === 0) return endGame(opponentOf(currentPlayer));
+    if (vsAI && currentPlayer === 2) aiTimeout = setTimeout(aiPlay, 400);
 }
 
 function aiPlay() {
     if (!gameStarted) return;
+
+    if (!huffTarget && aiMaybeOffersDraw()) return;
+
+    if (huffTarget) {
+        const { row, col } = huffTarget.lastPiece;
+        const candidates = [];
+        for (let r = 0; r < 5; r++)
+            for (let c = 0; c < 5; c++)
+                if (boardState[r][c] === 1 && !(r === row && c === col)) candidates.push([r, c]);
+        const [hr, hc] = chooseHuff(boardState, candidates);
+        boardState[hr][hc] = 0;
+        logMoveText(`A máquina soprou a peça em ${"abcde"[hc]}${hr + 1}.`);
+    }
+
     const move = findBestMove(boardState);
     if (!move) return endGame(1);
     logMove(...move.path[0], ...move.path.at(-1), move.captured.length > 0);
     boardState = applyMove(boardState, move, AI_PLAYER);
-    if (updatePieceCounts().p1Count === 0) return endGame(2);
+    updatePieceCounts();
+    if (generateMoves(boardState, 1).length === 0) return endGame(2);
     endTurn();
 }
+
 
 function showPlayButtons(){
     document.getElementById("start-btn").classList.add("hidden");
     document.getElementById("pvp-btn").classList.remove("hidden");
     document.getElementById("start-ai-btn").classList.remove("hidden");
+}
+
+function setButtons(state) {
+    const show = (id, v) => document.getElementById(id).classList.toggle("hidden", !v);
+    show("start-btn",    state === "idle");
+    show("pvp-btn",      state === "choose");
+    show("start-ai-btn", state === "choose");
+    show("draw-btn",     state === "playing");
+    show("resign-btn",   state === "playing");
 }
 
 // ooooooooooooooooooooooooo SOPRO ooooooooooooooooooooooooo
@@ -538,4 +603,77 @@ function handleHuffClick(row, col) {
     updateBoardUI();
 }
 
+// O jogador humano propõe empate
+function requestDraw() {
+    if (!gameStarted || drawPending) return;
+    if (chainPiece) {
+        logMoveText("Termina a captura antes de propor empate.");
+        return;
+    }
+
+    // PvP: o outro jogador decide
+    if (!vsAI) {
+        const other = opponentOf(currentPlayer);
+        logMoveText(`Jogador ${currentPlayer} propôs empate.`);
+        if (confirm(`Jogador ${currentPlayer} propõe empate. Jogador ${other}, aceitas?`)) {
+            endGame(null, "Empate por acordo.");
+        } else {
+            logMoveText(`Jogador ${other} recusou o empate.`);
+        }
+        return;
+    }
+
+    // vs IA: só na vez do humano
+    if (currentPlayer !== 1) return;
+
+    if (turnCounter - lastDrawOfferTurn < DRAW_COOLDOWN) {
+        logMoveText("A IA recusa-se a considerar outro empate tão cedo.");
+        return;
+    }
+    lastDrawOfferTurn = turnCounter;
+    drawPending = true;
+    logMoveText("Jogador 1 propôs empate. A IA está a pensar...");
+
+    setTimeout(() => {
+        drawPending = false;
+        if (!gameStarted) return;
+        if (aiAcceptsDraw()) {
+            logMoveText("A IA aceitou o empate.");
+            endGame(null, "Empate por acordo.");
+        } else {
+            logMoveText("A IA recusou o empate.");
+        }
+    }, 800);
+}
+
+// A IA propõe empate ao humano (devolve true se o jogo terminou)
+function aiMaybeOffersDraw() {
+    const aiCount = countPieces(boardState, AI_PLAYER);
+    const humanCount = countPieces(boardState, opponentOf(AI_PLAYER));
+
+    // só propõe com menos de 4 peças e menos peças que o adversário
+    if (!(aiCount < 4 && aiCount < humanCount)) return false;
+
+    // no máximo uma proposta a cada 5 turnos
+    if (turnCounter - lastAiDrawOfferTurn < DRAW_COOLDOWN) return false;
+
+    lastAiDrawOfferTurn = turnCounter;
+    logMoveText("A IA propôs empate.");
+    if (confirm("A IA propõe empate. Aceitas?")) {
+        endGame(null, "Empate por acordo.");
+        return true;
+    }
+    logMoveText("Recusaste o empate.");
+    return false;
+}
+
+
 //
+
+function showScores() {
+    let rows = "";
+    for (const level in scores) {
+        rows += `<tr><td>${level}</td><td>${scores[level].human}</td><td>${scores[level].ai}</td></tr>`;
+    }
+    document.getElementById("lb-body").innerHTML = rows;
+}
