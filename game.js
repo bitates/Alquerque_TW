@@ -96,7 +96,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    updateBoardUI(); //atualiza visual
+    loadTheme();
+    applyTheme();
 });
 
 function handleCellClick(row, col) {
@@ -243,12 +244,12 @@ function updateBoardUI() {
 
         //definir cor consoante o dono
         if (owner === 1) {
-            circle.setAttribute("fill", "#2c3e50"); // Player 1 color
-            circle.setAttribute("stroke", "#241403"); 
+            circle.setAttribute("fill", theme.p1);   // era "#2c3e50"
+            circle.setAttribute("stroke", "#241403");
             circle.setAttribute("r", "20");
         } else if (owner === 2) {
-            circle.setAttribute("fill", "#e74c3c"); // Player 2 color
-            circle.setAttribute("stroke", "#241403"); 
+            circle.setAttribute("fill", theme.p2);   // era "#e74c3c"
+            circle.setAttribute("stroke", "#241403");
             circle.setAttribute("r", "20");
         } else if (isValidDestination) {
             const hintsToggle = document.getElementById("hintsToggle"); //checkbox do som tem de estar ativo
@@ -768,4 +769,115 @@ function showScores() {
         rows += `<tr><td>${level}</td><td>${scores[level].human}</td><td>${scores[level].ai}</td></tr>`;
     }
     document.getElementById("lb-body").innerHTML = rows;
+}
+
+
+// ---------- TEMAS ----------
+const BACKGROUNDS = {
+    wood:  { image: 'url("https://cdn.architextures.org/textures/23/2/oak-veneermdf-none-rz7xim-1200.jpg")', color: 'transparent' },
+    dark:  { image: 'none', color: '#1b1917' },
+    green: { image: 'none', color: '#1e5a3a' },
+    blue:  { image: 'linear-gradient(135deg,#1c3b5a,#3a7bd5)', color: 'transparent' }
+};
+
+const PIECE_THEMES = {
+    classic: { p1: '#2c3e50', p2: '#e74c3c' },
+    bw:      { p1: '#111111', p2: '#f5f5f5' },
+    gold:    { p1: '#8e44ad', p2: '#f1c40f' },
+    nature:  { p1: '#16a085', p2: '#d35400' }
+};
+
+let theme = {
+    bg: 'wood',
+    customBgUrl: null,
+    pieces: 'classic',
+    p1: PIECE_THEMES.classic.p1,
+    p2: PIECE_THEMES.classic.p2
+};
+
+function saveTheme() {
+    try { localStorage.setItem("alquerqueTheme", JSON.stringify(theme)); } catch (e) {}
+}
+
+function loadTheme() {
+    try {
+        const saved = localStorage.getItem("alquerqueTheme");
+        if (saved) theme = { ...theme, ...JSON.parse(saved) };
+    } catch (e) {}
+}
+
+function markSelected(containerId, attr, value) {
+    document.querySelectorAll(`#${containerId} .theme-swatch`).forEach(b => {
+        b.classList.toggle("selected", b.dataset[attr] === value);
+    });
+}
+
+function applyTheme() {
+    const root = document.documentElement;
+
+    // fundo
+    if (theme.bg === "custom" && theme.customBgUrl) {
+        document.body.style.setProperty("--bg-image", `url("${theme.customBgUrl}")`);
+        document.body.style.setProperty("--bg-color", "transparent");
+    } else {
+        const bg = BACKGROUNDS[theme.bg] || BACKGROUNDS.wood;
+        document.body.style.setProperty("--bg-image", bg.image);
+        document.body.style.setProperty("--bg-color", bg.color);
+    }
+
+    // cores das peças (para os pontos dos cartões)
+    root.style.setProperty("--p1-color", theme.p1);
+    root.style.setProperty("--p2-color", theme.p2);
+
+    // sincroniza controlos
+    const c1 = document.getElementById("p1Color");
+    const c2 = document.getElementById("p2Color");
+    if (c1) c1.value = theme.p1;
+    if (c2) c2.value = theme.p2;
+    markSelected("bg-options", "bg", theme.bg);
+    markSelected("piece-options", "pieces", theme.pieces);
+
+    updateBoardUI();
+}
+
+function setBackground(name) {
+    playSound("Audio/clickSFX.mp3");
+    theme.bg = name;
+    saveTheme();
+    applyTheme();
+}
+
+function setCustomBackground() {
+    const url = document.getElementById("bgUrlInput").value.trim();
+    if (!url) return;
+    playSound("Audio/clickSFX.mp3");
+    theme.bg = "custom";
+    theme.customBgUrl = url;
+    saveTheme();
+    applyTheme();
+}
+
+function setPieceTheme(name) {
+    playSound("Audio/clickSFX.mp3");
+    theme.pieces = name;
+    theme.p1 = PIECE_THEMES[name].p1;
+    theme.p2 = PIECE_THEMES[name].p2;
+    saveTheme();
+    applyTheme();
+}
+
+function setCustomPieceColors() {
+    theme.pieces = "custom";
+    theme.p1 = document.getElementById("p1Color").value;
+    theme.p2 = document.getElementById("p2Color").value;
+    saveTheme();
+    applyTheme();
+}
+
+function resetTheme() {
+    playSound("Audio/clickSFX.mp3");
+    theme = { bg: 'wood', customBgUrl: null, pieces: 'classic',
+              p1: PIECE_THEMES.classic.p1, p2: PIECE_THEMES.classic.p2 };
+    saveTheme();
+    applyTheme();
 }
