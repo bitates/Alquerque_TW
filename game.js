@@ -13,14 +13,15 @@ function openPopup(panel) {
         playSound("Audio/clickSFX.mp3");
     }
 
-    if(vsAI && gameStarted){
+    if (panel === "draw" && vsAI && gameStarted) {
         requestDraw();
-    } else {
-        document.querySelectorAll("#popup .panel").forEach(p => p.style.display = "none");
-        const targetPanel = document.getElementById("panel-" + panel);
-        if (targetPanel) targetPanel.style.display = "flex";
-        document.getElementById("popup").classList.add("open");
+        return;
     }
+
+    document.querySelectorAll("#popup .panel").forEach(p => p.style.display = "none");
+    const targetPanel = document.getElementById("panel-" + panel);
+    if (targetPanel) targetPanel.style.display = "flex";
+    document.getElementById("popup").classList.add("open");
 }
 
 function closePopup(event) {
@@ -582,7 +583,7 @@ function aiPlay() {
     if (generateMoves(boardState, 1).length === 0) return endGame(2);
     endTurn();
 }
-1
+
 
 function showPlayButtons(){
     playSound("Audio/clickSFX.mp3");
