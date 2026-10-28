@@ -15,7 +15,7 @@
         <button class="popup-close" onclick="closePopup()" aria-label="Close">✕</button>
 
         <div id="panel-leaderboard" class="panel">
-            <h2>Leaderboard</h2>
+            <h2>👑 Leaderboard</h2>
             <table class="leaderboard">
                 <tr><th>Level</th><th>Human</th><th>AI</th></tr>
                 <tbody id="lb-body"></tbody>
@@ -47,8 +47,8 @@
             <h2>Settings</h2>
 
 
-            <label><input type="checkbox" id="hintsToggle"> Show possible moves</label>
-            <label><input type="checkbox" id="soundToggle"> Sound effects</label>
+            <label><input type="checkbox" id="hintsToggle" checked="checked"> Show possible moves</label>
+            <label><input type="checkbox" id="soundToggle" checked="checked"> Sound effects</label>
             <div class="level">
                 <button class="btn-easy" onclick="difficulty(1, 'Easy')">Easy</button> 
                 <button class="btn-medium" onclick="difficulty(3, 'Medium')">Medium</button> 
@@ -123,8 +123,8 @@
         <div id="panel-draw" class="panel">
             <h2>Accept Draw?</h2>
             <div class="level">
-                <button class="btn-easy" onclick="endGame(null)">Yes</button> 
-                <button class="btn-hard" onclick="closePopup()">No</button> 
+                <button class="btn-easy" onclick="endGame(null), 'Empate por acordo.'">Yes</button> 
+                <button class="btn-hard" onclick="handleHumanRefusedDraw()">No</button> 
             </div>
         </div>
         <div id="panel-endGame" class="panel">
@@ -142,17 +142,18 @@
     <!-- <h1 class="page-title"></h1>-->
     <aside class="leftSidebar">
         <div class="sidebar-header">
-            <h1>Alquerque</h1>
+            <img alt="LOGO" src="AlquerqueLogo (1).png" class="logo">
+            <!-- <h1>Alquerque</h1>-->
         </div>
         <div class="sidebar-buttons">
             <button class="btn" onclick="openPopup('settings')"> ⚙️ Game Settings </button>
             <button class="btn" onclick="openPopup('rules')"> 📖 Instructions / Rules </button>
-            <button class="btn" onclick="openPopup('leaderboard')"> 👑 Leaderboard </button>
+            <button class="btn" onclick="showScores(); openPopup('leaderboard')"> 👑 Leaderboard </button>
             <button class="btn" onclick="openPopup('themes')"> 🖌️ Themes </button>
             <button class="btn" onclick="openPopup('credits')"> 🌟 Credits </button>
 
             <button class="gbtn hidden" id="end-chain-btn">End turn</button>
-            <button class="gbtn hidden" id="draw-btn" onclick="requestDraw('draw')">Draw</button>
+            <button class="gbtn hidden" id="draw-btn" onclick="openPopup('draw')">Draw</button>
             <button class="gbtn hidden" id="resign-btn" onclick="resignGame()">Resign</button>
             <button class="gbtn" id="start-btn" onclick="showPlayButtons()">Start</button>
             <button class="gbtn hidden" id="pvp-btn" onclick="startGame('pvp')">Player vs Player</button>
@@ -249,27 +250,27 @@
                     <circle cx="375" cy="25" data-row="0" data-col="4"/>
 
                     <!-- Linha 1 -->
-                    <circle cx="25" cy="112.5" data-row="1" data-col="0"/>
-                    <circle cx="112.5" cy="112.5" data-row="1" data-col="1"/>
-                    <circle cx="200" cy="112.5" data-row="1" data-col="2"/>
-                    <circle cx="287.5" cy="112.5" data-row="1" data-col="3"/>
-                    <circle cx="375" cy="112.5" data-row="1" data-col="4"/>
+                    <circle cx="25" cy="35" data-row="1" data-col="0"/>
+                    <circle cx="112.5" cy="35" data-row="1" data-col="1"/>
+                    <circle cx="200" cy="35" data-row="1" data-col="2"/>
+                    <circle cx="287.5" cy="35" data-row="1" data-col="3"/>
+                    <circle cx="375" cy="35" data-row="1" data-col="4"/>
 
                     <!-- Linha 2 -->
-                    <circle cx="25" cy="200" data-row="2" data-col="0"/>
-                    <circle cx="112.5" cy="200" data-row="2" data-col="1"/>
-                    <circle cx="200" cy="200" data-row="2" data-col="2"/> <!-- O centro vazio! -->
-                    <circle cx="287.5" cy="200" data-row="2" data-col="3"/>
-                    <circle cx="375" cy="200" data-row="2" data-col="4"/>
+                    <circle cx="25" cy="355" data-row="2" data-col="0"/>
+                    <circle cx="112.5" cy="355" data-row="2" data-col="1"/>
+                    <circle cx="200" cy="355" data-row="2" data-col="2"/> <!-- O centro vazio! -->
+                    <circle cx="287.5" cy="355" data-row="2" data-col="3"/>
+                    <circle cx="375" cy="355" data-row="2" data-col="4"/>
 
                     <!-- Linha 3 -->
-                    <circle cx="25" cy="287.5" data-row="3" data-col="0"/>
-                    <circle cx="112.5" cy="287.5" data-row="3" data-col="1"/>
-                    <circle cx="200" cy="287.5" data-row="3" data-col="2"/>
-                    <circle cx="287.5" cy="287.5" data-row="3" data-col="3"/>
+                    <circle cx="25" cy="365" data-row="3" data-col="0"/>
+                    <circle cx="112.5" cy="365" data-row="3" data-col="1"/>
+                    <circle cx="200" cy="365" data-row="3" data-col="2"/>
+                    <circle cx="287.5" cy="365" data-row="3" data-col="3"/>
                    
                    
-                    <circle cx="375" cy="287.5" data-row="3" data-col="4"/>
+                    <circle cx="375" cy="365" data-row="3" data-col="4"/>
 
                     <!-- Linha 4 -->
                     <circle cx="25" cy="375" data-row="4" data-col="0"/>

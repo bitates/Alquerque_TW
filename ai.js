@@ -211,6 +211,7 @@ return bestMoves[Math.floor(Math.random() * bestMoves.length)];
 
 // Escolha do Sopro pela IA
 function chooseHuff(board, candidates, depth = aiDepth) {
+if(difficultyName === "Easy") findbestMove(board, 1);
 let best = candidates[0];
 let bestScore = -Infinity;
 for (const [r, c] of candidates) {
@@ -231,6 +232,7 @@ function difficulty(depth, name) {
     const span = document.getElementById("difficulty-name");
     span.textContent = name;
     span.style.color = { Easy: "#27ae60", Medium: "#dad303", Hard: "#e74c3c" }[name];
+    playSound("Audio/clickSFX.mp3");
 }
 
 let scores = {

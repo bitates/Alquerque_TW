@@ -7,10 +7,20 @@ function test() {
 }
 
 function openPopup(panel) {
-    document.querySelectorAll("#popup .panel").forEach(p => p.style.display = "none");
-    const targetPanel = document.getElementById("panel-" + panel);
-    if (targetPanel) targetPanel.style.display = "flex";
-    document.getElementById("popup").classList.add("open");
+    if(panel === "draw") { 
+        playSound("Audio/DrawResignSFX.mp3");
+    } else if (panel !== "endGame") {
+        playSound("Audio/clickSFX.mp3");
+    }
+
+    if(vsAI && gameStarted){
+        requestDraw();
+    } else {
+        document.querySelectorAll("#popup .panel").forEach(p => p.style.display = "none");
+        const targetPanel = document.getElementById("panel-" + panel);
+        if (targetPanel) targetPanel.style.display = "flex";
+        document.getElementById("popup").classList.add("open");
+    }
 }
 
 function closePopup(event) {
@@ -108,6 +118,7 @@ function handleCellClick(row, col) {
     if (!selectedPiece) {
         if (clickedPieceOwner === currentPlayer) {
             selectedPiece = { row, col };
+            playSound("Audio/clickSFX.mp3");
             updateBoardUI();
         }
         return;
@@ -126,6 +137,7 @@ function handleCellClick(row, col) {
 
         if (selectedPiece.row !== row || selectedPiece.col !== col) {
             selectedPiece = { row, col };
+            playSound("Audio/clickSFX.mp3");
         } else {
             selectedPiece = null;
         }
@@ -162,6 +174,7 @@ function handleCellClick(row, col) {
         if (!chainPiece) chainVisited = [{ row: selectedPiece.row, col: selectedPiece.col }];
 
         boardState[selectedPiece.row + rowDiff / 2][selectedPiece.col + colDiff / 2] = 0;
+        playSound("Audio/eatPieceSFX.mp3");
     }
 
     boardState[row][col] = currentPlayer;
@@ -238,8 +251,14 @@ function updateBoardUI() {
             circle.setAttribute("stroke", "#241403"); 
             circle.setAttribute("r", "20");
         } else if (isValidDestination) {
-            circle.setAttribute("fill", "#b6b6b6"); // Círculo amarelo/dourado para dica de movimento!
-            circle.setAttribute("stroke", "#241403"); 
+            const hintsToggle = document.getElementById("hintsToggle"); //checkbox do som tem de estar ativo
+            if (hintsToggle && !hintsToggle.checked){
+                circle.setAttribute("fill", "#b6b6b600"); // Círculo amarelo/dourado para dica de movimento!
+                circle.setAttribute("stroke", "#24140300"); 
+            } else {
+                circle.setAttribute("fill", "#b6b6b6"); // Círculo amarelo/dourado para dica de movimento!
+                circle.setAttribute("stroke", "#241403"); 
+            }
             circle.setAttribute("r", "10");
         }else {
             circle.setAttribute("fill", "transparent"); // Empty space
@@ -257,10 +276,11 @@ function updateBoardUI() {
 
         //efeito 3D na peça selecionada
         if (isSelected) {
-            circle.style.transform = "translateY(-6px)";
+            //circle.style.transform = "translateY(-6px)";
+            circle.setAttribute("r", "22"); // Fica um pouco maior
             circle.style.filter = "drop-shadow(0px 8px 4px rgba(0, 0, 0, 0.4))";
         } else {
-            circle.style.transform = "none";
+            //circle.style.transform = "none";
             circle.style.filter = "none";
         }
     });
@@ -395,10 +415,18 @@ function startGame(mode) {
     turnCounter = 0;
     lastDrawOfferTurn = -99;
     drawPending = false;
-
     clearTimeout(aiTimeout);
     console.log("Jogo iniciado!");
     if (mode) vsAI = mode === "ai";
+    
+    animatePiecesToPosition();
+    playSound("Audio/clickSFX.mp3");
+    playSound("Audio/slidePiecesSFX.mp3");
+    if(!vsAI){
+        document.getElementById("difficulty-box").classList.add("hidden");
+    } else {    
+        document.getElementById("difficulty-box").classList.remove("hidden");
+    }
     document.getElementById("pvp-btn").classList.add("hidden");
     document.getElementById("start-ai-btn").classList.add("hidden");
     document.getElementById("draw-btn").classList.remove("hidden");
@@ -425,8 +453,6 @@ function startGame(mode) {
 
     // Se já houver um timer a correr, limpa-o antes de iniciar outro
     if (timerInterval) clearInterval(timerInterval);
-
-
 
     startTimer();
 }   
@@ -465,6 +491,7 @@ function handleTimeOut(player) {
 
 function resignGame() {
     const loser = currentPlayer;
+    playSound("Audio/DrawResignSFX.mp3");
     endGame(opponentOf(loser), `O Jogador ${loser} desistiu e perdeu o jogo.`);
 }
 
@@ -490,6 +517,7 @@ function opponentOf(player) {
 }
 
 function restartGame() {
+    document.getElementById("start-btn").classList.add("hidden");
     closePopup();
     startGame();
 }
@@ -526,27 +554,37 @@ function aiPlay() {
     if (!huffTarget && aiMaybeOffersDraw()) return;
 
     if (huffTarget) {
-        const { row, col } = huffTarget.lastPiece;
-        const candidates = [];
-        for (let r = 0; r < 5; r++)
-            for (let c = 0; c < 5; c++)
-                if (boardState[r][c] === 1 && !(r === row && c === col)) candidates.push([r, c]);
-        const [hr, hc] = chooseHuff(boardState, candidates);
-        boardState[hr][hc] = 0;
-        logMoveText(`A máquina soprou a peça em ${"abcde"[hc]}${hr + 1}.`);
+        if (difficultyName === "Easy") {
+            huffTarget = null;
+        } else {
+            const { row, col } = huffTarget.lastPiece;
+            const candidates = [];
+            for (let r = 0; r < 5; r++)
+                for (let c = 0; c < 5; c++)
+                    if (boardState[r][c] === 1 && !(r === row && c === col)) candidates.push([r, c]);
+            const [hr, hc] = chooseHuff(boardState, candidates);
+            boardState[hr][hc] = 0;
+            logMoveText(`A máquina soprou a peça em ${"abcde"[hc]}${hr + 1}.`);
+        }
     }
 
     const move = findBestMove(boardState);
     if (!move) return endGame(1);
     logMove(...move.path[0], ...move.path.at(-1), move.captured.length > 0);
     boardState = applyMove(boardState, move, AI_PLAYER);
+    if (move.captured.length > 0 || huffTarget) {
+        playSound("Audio/eatPieceSFX.mp3"); // Altera para o caminho do teu ficheiro de captura
+    } else {
+        playSound("Audio/clickSFX.mp3");
+    }
     updatePieceCounts();
     if (generateMoves(boardState, 1).length === 0) return endGame(2);
     endTurn();
 }
-
+1
 
 function showPlayButtons(){
+    playSound("Audio/clickSFX.mp3");
     document.getElementById("start-btn").classList.add("hidden");
     document.getElementById("pvp-btn").classList.remove("hidden");
     document.getElementById("start-ai-btn").classList.remove("hidden");
@@ -561,7 +599,41 @@ function setButtons(state) {
     show("resign-btn",   state === "playing");
 }
 
-// ooooooooooooooooooooooooo SOPRO ooooooooooooooooooooooooo
+function animatePiecesToPosition() {
+    const circles = document.querySelectorAll('.pieces circle');
+    
+    circles.forEach(circle => {
+        const row = parseInt(circle.getAttribute('data-row'));
+        const col = parseInt(circle.getAttribute('data-col'));
+        
+        // Coordenadas finais exatas no tabuleiro
+        const targetX = 25 + (col * 87.5);
+        const targetY = 25 + (row * 87.5);
+
+        // Dispara o slide suave para a posição final do tabuleiro
+        setTimeout(() => {
+            circle.setAttribute('cx', targetX);
+            circle.setAttribute('cy', targetY);
+        }, 50);
+    });
+}
+
+function playSound(filename) {
+    const soundToggle = document.getElementById("soundToggle"); //checkbox do som tem de estar ativo
+    if (soundToggle && !soundToggle.checked) return;
+
+    //cria obj de audio para o MP3
+    const audio = new Audio(filename);
+    audio.play().catch(error => {
+        // Previne erros caso o browser bloqueie áudio antes de haver interação do utilizador
+        console.log("Erro ao reproduzir som:", error);
+    });
+}
+
+
+// oooooooooooooooooooooooooooooooooooooo SOPRO ooooooooooooooooooooooooooooooooooooooo
+
+
 
 // o jogador atual tem alguma captura disponível?
 function playerHasCapture() {
@@ -599,6 +671,7 @@ function handleHuffClick(row, col) {
     logMoveText(` Jogador ${currentPlayer} soprou a peça em ${colsName[col]}${row + 1}.`);
 
     huffTarget = null;
+    playSound("Audio/eatPieceSFX.mp3");
     updatePieceCounts();
     updateBoardUI();
 }
@@ -659,12 +732,31 @@ function aiMaybeOffersDraw() {
 
     lastAiDrawOfferTurn = turnCounter;
     logMoveText("A IA propôs empate.");
-    if (confirm("A IA propõe empate. Aceitas?")) {
+
+    // 1. Pausa o jogo/tempo
+    gameStarted = false; 
+    if (timerInterval) clearInterval(timerInterval);
+    openPopup("draw");
+    /*if (confirm("A IA propõe empate. Aceitas?")) {
         endGame(null, "Empate por acordo.");
         return true;
+    }*/
+    //logMoveText("Recusaste o empate.");
+    return true;
+}
+
+function handleHumanRefusedDraw() {
+    closePopup();
+    logMoveText("Recusaste o empate. A IA vai continuar a jogar...");
+    
+    // Reativa o estado do jogo
+    gameStarted = true;
+    startTimer();
+
+    // Se for a vez da IA (caso esteja a jogar contra ela), dá um pequeno timeout para ela efetuar a jogada
+    if (vsAI && currentPlayer === AI_PLAYER) {
+        aiTimeout = setTimeout(aiPlay, 800);
     }
-    logMoveText("Recusaste o empate.");
-    return false;
 }
 
 
