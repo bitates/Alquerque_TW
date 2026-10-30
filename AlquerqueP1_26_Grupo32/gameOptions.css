@@ -1,0 +1,253 @@
+
+/* Estrutura de sub-títulos */
+h1 {
+    font-weight: bold;
+    color: #e7e7e5;
+    font-size: 40px;
+    margin: 5px;
+    text-align: center;
+    font-family: 'Umpush Light';
+}
+
+.logo {
+    width: 98%;
+    height: auto;
+    margin-bottom: 15px;
+}
+
+/* caixa do lado esquerdo do site */
+.leftSidebar {
+    margin: 30px;
+    width: 400px;
+    height: auto;
+    padding: 15px 12px;
+    border-radius: 15px;
+    background-color: #262421;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+    border: 2px solid #1B0000;
+}
+
+/* classe global que trata dos botoes da barra da esquerda */
+.sidebar-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+/* botoes especificos das opcoes da barra da esquerda */
+.btn {
+    height: 70px;
+    width: 90%;
+    background-color: #44423f; 
+    color: white;
+    border: none;
+    padding: 12px 18px; 
+    border-radius: 8px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.2s;
+    padding: 14px 18px;
+    justify-content: left;
+    gap: 10px;
+    display: flex;
+    align-items: center;
+    font-family: 'Umpush Light', sans-serif;
+    font-weight: bold;
+}
+
+.btn:hover {
+    background-color: #5c5a58;
+    border: 0.1px solid #ffffff;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
+}
+
+/* botões que controlam o jogo */
+.gbtn { 
+    width: 75%;
+    height: 50px;
+    padding: 5px;
+    background-color: #bb8e3a; 
+    border: 3px solid rgb(224, 194, 93);
+    color: rgb(255, 255, 255);
+    
+    padding: 12px 18px; 
+    border-radius: 15px;
+    font-size: 30px;
+    cursor: pointer;
+    transition: 0.2s;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    font-family: 'Umpush Light', sans-serif;
+    font-weight: bold;
+}
+
+/* esconde os botoes */
+.hidden {
+    display: none !important;
+}
+
+.gbtn:hover {
+
+    border: 0.2px solid #ffffff;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
+}
+
+.gbtn.resign-btn {
+    background-color: #c0392b;
+    border: 3px solid #e9967a;
+}
+
+.gbtn.draw-btn {
+    background-color: #922b21;
+    border-color: white;
+    box-shadow: 0 0 12px rgba(231, 76, 60, 0.7);
+}
+
+.gbtn.draw-btn:hover, .gbtn.resign-btn:hover {
+    transform: scale(1.03);
+    background-color: #922b21;
+    border-color: white;
+    box-shadow: 0 0 12px rgba(231, 76, 60, 0.7);
+}
+
+/* muda visual do grande botao de start */
+#start-btn {
+    background-color: #27ae60;
+    border-color: #2ecc71;
+    width: 90%;
+    height: 100px;
+    font-size: 60px;
+}
+
+
+/* popup dos opções do jogo */
+.popup-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+.popup-overlay.open { display: flex; }
+
+/* conteudos dos popups */
+.popup-content {
+    position: relative;
+    background: #262421;
+    color: #fefefa;
+    padding: 24px 32px;
+    border-radius: 15px;
+    border: 2px solid #1B0000;
+    min-width: 320px;
+    max-width: 90vw;
+    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.popup-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    border: none;
+    background: none;
+    color: #fefefa;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.popup-content h1 { font-size: 60px; }
+
+
+/*cada painel dos popups*/
+.panel {
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px; 
+}
+
+/*muda a estrutura só das regras para melhorar formatação*/
+.panel .rules-list {
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 20px;
+    font-size: 18px;     
+    line-height: 1.6;   
+}
+
+/*espaçamento entre li*/
+.panel li{ 
+    margin-bottom: 10px ;
+}
+
+/*tabela de classificação*/
+.leaderboard {
+    width: 100%;
+    text-align: center;
+    font-size: 22px;
+}
+
+/*botoes para níveis de dificuldade(dentro das settings)*/
+.level {
+    pointer-events: auto; 
+    z-index: 10;
+    display: flex;
+    flex-direction: row;   
+    align-items: center;    
+    gap: 12px;
+    font-weight: bold;
+    margin-top: 18px;
+}
+
+/* Estilos gerais partilhados por todos os botões */
+.level button {
+    color: #fefefa;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Easy */
+.btn-easy {
+    background-color: #27ae60;
+}
+.btn-easy:hover {
+    background-color: #219653;
+    transform: translateY(-2px);
+}
+
+/* Medium  */
+.btn-medium {
+    background-color: #dad303;
+}
+.btn-medium:hover {
+    background-color: #d68910;
+    transform: translateY(-2px);
+}
+
+/* Hard  */
+.btn-hard {
+    background-color: #e74c3c;
+}
+.btn-hard:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+}
+
+/* cores dos botões dos modos de jogo */
+#start-ai-btn, #end-chain-btn {
+    font-size: 28px;
+    background-color: #bb8e3a;
+}

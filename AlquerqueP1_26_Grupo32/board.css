@@ -1,0 +1,154 @@
+/* Modificar o tipo de letra do site */
+@font-face {
+    font-family: 'Umpush Light';
+    src: url('./Umpush Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* estrutura geral e backgroud do site */
+body {
+    margin: 0;
+    min-height: 100vh;
+    background-image: var(--bg-image, url("https://cdn.architextures.org/textures/23/2/oak-veneermdf-none-rz7xim-1200.jpg"));
+    background-color: var(--bg-color, transparent);
+    background-size: cover;
+    background-attachment: fixed;
+    font-family: 'Umpush Light', sans-serif;
+}
+
+
+/* ---------- Temas ---------- */
+.theme-section { margin-bottom: 10px; }
+.theme-section h2 { margin: 0 0 8px 0; color: #E8D5A5; font-size: 22px; }
+
+.theme-options {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.theme-swatch {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    border: 3px solid #44423f;
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.theme-swatch:hover { transform: scale(1.08); }
+.theme-swatch.selected {
+    border-color: #E8D5A5;
+    box-shadow: 0 0 10px rgba(232, 213, 165, 0.8);
+}
+
+.theme-custom {
+    display: flex;
+    align-items: center;
+    width: 500px;
+    gap: 8px;
+    margin-top: 10px;
+    font-size: 16px;
+}
+.theme-custom input[type="text"] {
+    flex: 1;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid #44423f;
+    background: #1b1917;
+    color: #fefefa;
+}
+.theme-custom input[type="color"] {
+    width: 40px;
+    height: 30px;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.pieces-themes {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 2px solid rgb(224, 194, 93);
+    background-color: #bb8e3a;
+    color: white;
+    font-family: 'Umpush Light', sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.pieces-themes:hover { box-shadow: 0 0 10px rgba(255,255,255,0.6); }
+
+
+/* Estrutura do tabuleuiro */
+.game-layout {
+    position: absolute;
+    top: 0;
+    left: 190px;
+    right: 270px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+}
+
+
+/* tabuleiro, dentro de game-layout*/
+.board {
+    width: 750px;
+    aspect-ratio: 1 / 1;
+    height: auto;
+    padding: 18px;
+    background-color: rgb(247, 210, 154);
+    border: 10px solid rgb(43, 20, 2);
+    box-sizing: border-box;
+    flex-shrink: 0;
+    border-radius: 25px;
+    pointer-events: auto; /* Garante que o tabuleiro recebe cliques */
+}
+
+/* controla a grelha do board */
+.board-grid {
+    width: 100%;
+    height: 100%;
+    display: block;
+    fill: none;
+    stroke: rgb(43, 20, 2);
+    stroke-width: 3;
+}
+
+/* dificuldade escolhida */
+#difficulty-box {
+    background-color: #262421;
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+#difficulty-name {
+    color: #dad303;
+}
+
+/* peças do jogo */
+.pieces circle{
+    /*r: 20px;   /* radious */
+    stroke-width: 2.5;
+    transition: cx 0.6s ease-in-out, cy 0.6s ease-in-out, filter 0.2s, r 0.2s;
+}
+
+/* contorno amarelo à volta das peças quando fazes sopro */
+.pieces circle.huffable {
+    stroke: #7cf10f;
+    stroke-width: 6;
+    cursor: pointer;
+}
+
+

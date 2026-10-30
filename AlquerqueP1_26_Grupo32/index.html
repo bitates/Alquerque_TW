@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Alquerque</title>
+    <script src="game.js" defer></script>
+    <script src="ai.js" defer></script>
+    
+    <link rel="stylesheet" href="gameOptions.css">
+    <link rel="stylesheet" href="board.css">
+    <link rel="stylesheet" href="playerStats.css">
+</head>
+
+<body>
+<div class="popup-overlay" id="popup" onclick="closePopup(event)">
+    <div class="popup-content" role="dialog" aria-modal="true">
+        <button class="popup-close" onclick="closePopup()" aria-label="Close">✕</button>
+
+        <div id="panel-leaderboard" class="panel">
+            <h1>👑 Leaderboard</h1>
+            <table class="leaderboard">
+                <tr><th>Level</th><th>Human</th><th>AI</th></tr>
+                <tbody id="lb-body"></tbody>
+            </table>
+        </div>
+
+        <div id="panel-credits" class="panel">
+            <h1>Credits</h1>
+
+            <ul class="credits-list">
+
+                <li>Trabalho realizado na Unidade Curricular Tecnologias Web, com o objetivo <br>
+                    de desenvolver o jogo Alquerque utilizando JavaScript, CSS e html:
+                </li>
+                
+                <li><strong>Developers:</strong> 
+                    <ul>
+                        <li>Simão Ribeiro - 202406281</li>
+                        <li>Martim Oliveira - 202407302</li>
+                        <li>Guilherme Gonçalves  - 202407276</li>
+                    </ul>
+                </li>
+            </ul>
+
+
+        </div>
+
+        <div id="panel-settings" class="panel">
+            <h1>Settings</h1>
+
+
+            <label><input type="checkbox" id="hintsToggle" checked="checked"> Show possible moves</label>
+            <label><input type="checkbox" id="soundToggle" checked="checked"> Sound effects</label>
+            <div class="level">
+                <button class="btn-easy" onclick="difficulty(1, 'Easy')">Easy</button> 
+                <button class="btn-medium" onclick="difficulty(3, 'Medium')">Medium</button> 
+                <button class="btn-hard" onclick="difficulty(6, 'Hard')">Hard</button> 
+            </div>
+            <label>Game time:
+                <select onchange="setTime(this.value)">
+                    <option value="1">1 min</option>
+                    <option value="3">3 min</option>
+                    <option value="5">5 min</option>
+                    <option value="10" selected>10 min</option>
+                    <option value="15">15 min</option>
+                </select>
+            </label>
+        </div>
+
+        <div id="panel-rules" class="panel">
+            <h1>Rules</h1>
+            
+            <ul class="rules-list">
+                <li><strong>Turns:</strong> Players alternate turns, making either a move, capture or a "huff".</li>
+                
+                <li><strong>Movement:</strong> A player can move a piece to an adjacent position if:
+                    <ul>
+                        <li>There is a line connecting the starting and ending positions;</li>
+                        <li>The move does not step backward toward their own starting row.</li>
+                    </ul>
+                </li>
+                
+                <li><strong>Single and Multiple Captures:</strong> 
+                    <ul>
+                        <li>An opponent's piece is captured by jumping over it into an empty position connected by a line (jumping backward is allowed);</li>
+                        <li>Pieces in the back row can capture sideways or backward;</li>
+                        <li>The captured piece is removed from the board;</li>
+                        <li><strong>Whenever possible, capture is mandatory.</strong></li>
+                        <li><strong>Multiple captures</strong> can be made in a single turn:
+                            <ul>
+                                <li>Jump directions can change with each capture;</li>
+                                <li>The piece <em>cannot</em> visit the same position twice;</li>
+                                <li>The piece <em>cannot</em> capture the same opponent's piece twice;</li>
+                                <li>Once a capture sequence begins, it is mandatory to continue capturing as long as possible.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Path Choice:</strong> If multiple alternative capture paths exist, any path may be chosen (it does not have to be the one that captures the most pieces).</li>
+                    </ul>
+                </li>
+
+                <li><strong>Huff (Penalty):</strong> Occurs at the beginning of the turn, before moving or capturing, if:
+                    <ul>
+                        <li>The player failed to make a mandatory capture and moved a piece instead;</li>
+                        <li>The player made a capture, but a multiple capture was possible.</li>
+                    </ul>
+                    <ul>
+                        <li><strong>Penalty:</strong> The opponent can "huff" (permanently remove) 1 piece belonging to the offender;</li>
+                        <li>Even if multiple pieces could have captured, only 1 piece is huffed.</li>
+                    </ul>
+                </li>
+                <li><strong>End of the Game:</strong> The game ends and the player loses if:
+                    <ul>
+                        <li>They have no pieces left to play;</li>
+                        <li>They have no valid moves left (neither movements nor captures).</li>
+                    </ul>
+                </li>
+
+                <li><strong>Draw:</strong> The game can end in a draw by mutual agreement, for example, when:
+                    <ul>
+                        <li>Captures can no longer occur (pieces cannot move backward and a blocking row exists);</li>
+                        <li>No captures have occurred for many turns.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div id="panel-themes" class="panel">
+            <h1>Themes</h1>
+
+            <div class="theme-section">
+                <h2>Fundo</h2>  
+                <div class="theme-options" id="bg-options">
+                    <button class="theme-swatch bg-swatch selected" data-bg="wood"
+                            style="background-image:url('https://cdn.architextures.org/textures/23/2/oak-veneermdf-none-rz7xim-1200.jpg')"
+                            onclick="setBackground('wood')" title="Madeira"></button>
+                    <button class="theme-swatch bg-swatch" data-bg="dark"
+                            style="background:#1b1917" onclick="setBackground('dark')" title="Escuro"></button>
+                    <button class="theme-swatch bg-swatch" data-bg="green"
+                            style="background:#1e5a3a" onclick="setBackground('green')" title="Verde"></button>
+                    <button class="theme-swatch bg-swatch" data-bg="blue"
+                            style="background:linear-gradient(135deg,#1c3b5a,#3a7bd5)" onclick="setBackground('blue')" title="Azul"></button>
+                </div>
+                <label class="theme-custom">Imagem (URL):
+                    <input type="text" id="bgUrlInput" placeholder="https://...">
+                </label>
+                <label class="theme-custom">Imagem (URL):
+                    <button class="pieces-themes" onclick="setCustomBackground()">Aplicar</button>
+                </label>
+            </div>
+
+            <div class="theme-section">
+                <h2>Cores das peças</h2>
+                <div class="theme-options" id="piece-options">
+                    <button class="theme-swatch piece-swatch selected" data-pieces="classic"
+                            style="background:linear-gradient(90deg,#2c3e50 50%,#e74c3c 50%)"
+                            onclick="setPieceTheme('classic')" title="Clássico"></button>
+                    <button class="theme-swatch piece-swatch" data-pieces="bw"
+                            style="background:linear-gradient(90deg,#111 50%,#f5f5f5 50%)"
+                            onclick="setPieceTheme('bw')" title="Preto / Branco"></button>
+                    <button class="theme-swatch piece-swatch" data-pieces="gold"
+                            style="background:linear-gradient(90deg,#8e44ad 50%,#f1c40f 50%)"
+                            onclick="setPieceTheme('gold')" title="Roxo / Dourado"></button>
+                    <button class="theme-swatch piece-swatch" data-pieces="nature"
+                            style="background:linear-gradient(90deg,#16a085 50%,#d35400 50%)"
+                            onclick="setPieceTheme('nature')" title="Turquesa / Laranja"></button>
+                </div>
+                <label class="theme-custom">
+                    Jogador 1 <input type="color" id="p1Color" value="#2c3e50" oninput="setCustomPieceColors()">
+                </label>
+                <label class="theme-custom">
+                    Jogador 2 <input type="color" id="p2Color" value="#e74c3c" oninput="setCustomPieceColors()">
+                </label>
+            </div>
+
+            <button class="pieces-themes" onclick="resetTheme()">Repor predefinição</button>
+        </div>
+
+
+        <div id="panel-draw" class="panel">
+            <h1>Accept Draw?</h1>
+            <div class="level">
+                <button class="btn-easy" onclick="endGame(null, 'Empate por acordo.')">Yes</button> 
+                <button class="btn-hard" onclick="handleHumanRefusedDraw()">No</button> 
+            </div>
+        </div>
+        <div id="panel-endGame" class="panel">
+            <h1>END</h1>
+            <p id="endGameMessage"></p>
+            <div class="level">
+                <button class="btn-easy" onclick="restartGame()">Play again</button>
+                <button class="btn-hard" onclick="closePopup()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <aside class="leftSidebar">
+        <div class="sidebar-header">
+            <img alt="LOGO" src="AlquerqueLogo(1).png" class="logo">
+        </div>
+        <div class="sidebar-buttons">
+            <button class="btn" onclick="openPopup('settings')"> ⚙️ Game Settings </button>
+            <button class="btn" onclick="openPopup('rules')"> 📖 Instructions / Rules </button>
+            <button class="btn" onclick="showScores(); openPopup('leaderboard')"> 👑 Leaderboard </button>
+            <button class="btn" onclick="openPopup('themes')"> 🖌️ Themes </button>
+            <button class="btn" onclick="openPopup('credits')"> 🌟 Credits </button>
+
+            <button class="gbtn hidden" id="end-chain-btn">End turn</button>
+            <button class="gbtn hidden" id="draw-btn" onclick="openPopup('draw')">Draw</button>
+            <button class="gbtn hidden" id="resign-btn" onclick="resignGame()">Resign</button>
+            <button class="gbtn" id="start-btn" onclick="showPlayButtons()">Start</button>
+            <button class="gbtn hidden" id="pvp-btn" onclick="startGame('pvp')">Player vs Player</button>
+            <button class="gbtn hidden" id="start-ai-btn" onclick="startGame('ai')">Player vs AI</button>
+        </div>
+    </aside>
+
+    <aside class="chatSidebar">
+        <div class="player-status-panel">
+            <div class="player-card" id="player2-card">
+                <span class="player-dot red" id="dot-p2"></span>
+                <div class="player-info">
+                    <span class="player-name">Player 2</span>
+                    <span class="player-pieces">Pieces: <strong id="p2-count">12</strong></span>
+                    <span class="player-timer" id="timer-p2">10:00</span>
+                </div>
+            </div>
+
+            <div class="match-info">
+                <span id="turn-indicator">Turn: Player 1</span>
+            </div>
+
+            <div class="player-card active" id="player1-card">
+                <span class="player-dot dark" id="dot-p1"></span>
+                <div class="player-info">
+                    <span class="player-name">Player 1</span>
+                    <span class="player-pieces">Pieces: <strong id="p1-count">12</strong></span>
+                    <span class="player-timer" id="timer-p1">10:00</span>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="chatSidebar-header">
+            <h1>Log</h1>
+        </div>
+        <div class="chatSidebar-text" id="gameText">
+        </div>
+    </aside>
+    
+    <main class="game-layout">
+        <div id="difficulty-box">Difficulty: <span id="difficulty-name">Medium</span></div>
+        <div class="board">
+            <svg viewBox="0 0 400 400"
+                xmlns="http://www.w3.org/2000/svg"
+                class="board-grid">
+
+                <!-- Linhas verticais e horizontais-->
+                <path d="
+                    M25 25 V375
+                    M112.5 25 V375
+                    M200 25 V375
+                    M287.5 25 V375
+                    M375 25 V375    
+
+                    M25 25 H375
+                    M25 112.5 H375
+                    M25 200 H375
+                    M25 287.5 H375
+                    M25 375 H375
+                "/>
+
+                <!-- Diagonais -->
+                <path d="
+                    M25 25 L112.5 112.5
+                    M200 25 L112.5 112.5
+                    M200 25 L287.5 112.5
+                    M375 25 L287.5 112.5
+
+                    M25 200 L112.5 112.5
+                    M200 200 L112.5 112.5
+                    M200 200 L287.5 112.5
+                    M375 200 L287.5 112.5
+
+                    M25 200 L112.5 287.5
+                    M200 200 L112.5 287.5
+                    M200 200 L287.5 287.5
+                    M375 200 L287.5 287.5
+
+                    M25 375 L112.5 287.5
+                    M200 375 L112.5 287.5
+                    M200 375 L287.5 287.5
+                    M375 375 L287.5 287.5
+                "/>
+
+                <!-- Peças -->
+                <g class="pieces">
+                    <!-- Linha 0 -->
+                    <circle cx="25" cy="25" data-row="0" data-col="0"/>
+                    <circle cx="112.5" cy="25"  data-row="0" data-col="1"/>
+                    <circle cx="200" cy="25" data-row="0" data-col="2"/>
+                    <circle cx="287.5" cy="25" data-row="0" data-col="3"/>
+                    <circle cx="375" cy="25" data-row="0" data-col="4"/>
+
+                    <!-- Linha 1 -->
+                    <circle cx="25" cy="35" data-row="1" data-col="0"/>
+                    <circle cx="112.5" cy="35" data-row="1" data-col="1"/>
+                    <circle cx="200" cy="35" data-row="1" data-col="2"/>
+                    <circle cx="287.5" cy="35" data-row="1" data-col="3"/>
+                    <circle cx="375" cy="35" data-row="1" data-col="4"/>
+
+                    <!-- Linha 2 -->
+                    <circle cx="25" cy="355" data-row="2" data-col="0"/>
+                    <circle cx="112.5" cy="355" data-row="2" data-col="1"/>
+                    <circle cx="200" cy="355" data-row="2" data-col="2"/> <!-- O centro vazio! -->
+                    <circle cx="287.5" cy="355" data-row="2" data-col="3"/>
+                    <circle cx="375" cy="355" data-row="2" data-col="4"/>
+
+                    <!-- Linha 3 -->
+                    <circle cx="25" cy="365" data-row="3" data-col="0"/>
+                    <circle cx="112.5" cy="365" data-row="3" data-col="1"/>
+                    <circle cx="200" cy="365" data-row="3" data-col="2"/>
+                    <circle cx="287.5" cy="365" data-row="3" data-col="3"/>
+                   
+                   
+                    <circle cx="375" cy="365" data-row="3" data-col="4"/>
+
+                    <!-- Linha 4 -->
+                    <circle cx="25" cy="375" data-row="4" data-col="0"/>
+                    <circle cx="112.5" cy="375" data-row="4" data-col="1"/>
+                    <circle cx="200" cy="375" data-row="4" data-col="2"/>
+                    <circle cx="287.5" cy="375" data-row="4" data-col="3"/>
+                    <circle cx="375" cy="375" data-row="4" data-col="4"/>
+                </g>
+            </svg>
+
+        </div>
+    </main>
+</body>
+</html>
