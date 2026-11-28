@@ -1,3 +1,5 @@
+// não usar este código, auth.js é o código final para autenticação
+
 document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById("panel-login");
     const regForm = document.getElementById("panel-register");

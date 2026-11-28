@@ -1,3 +1,7 @@
+// não usar este código, é apenas para testes. 
+// O código final deve usar o api.js
+
+
 document.addEventListener("DOMContentLoaded", () => {
     const regForm = document.getElementById("panel-register");
     const registerUrl = "http://twserver.alunos.dcc.fc.up.pt/register";

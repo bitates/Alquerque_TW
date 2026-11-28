@@ -5,7 +5,8 @@
     <title>Alquerque</title>
     <script src="game.js"></script>
     <script src="ai.js"></script>
-    <script src="server.js"></script>
+    <script src="api.js"></script>
+    <script src="auth.js"></script>
     
     <link rel="stylesheet" href="gameOptions.css">
     <link rel="stylesheet" href="board.css">
@@ -44,15 +45,16 @@
             </ul>
         </div>
 
-        <form id="panel-register" action="register" method="post" class="panel login-popup">
-            <h3>Register</h3>
+        <form id="panel-register" class="panel login-popup">
+            <h3>Login / Register</h3>
+
             <label for="reg-user">Username: </label>
-            <input type="text" id="reg-user" name="nick" required>
+            <input type="text" id="reg-user" name="nick" autocomplete="username" required>
 
             <label for="reg-pass">Password: </label>
-            <input type="password" id="reg-pass" name="password" required>
-            
-            <button type="submit">Register</button>
+            <input type="password" id="reg-pass" name="password" autocomplete="current-password" required>
+
+            <button type="submit">Enter</button>
         </form>
 
         <div id="panel-settings" class="panel">
